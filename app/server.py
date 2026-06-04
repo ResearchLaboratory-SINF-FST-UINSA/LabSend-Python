@@ -193,6 +193,30 @@ async def submit_identity(token: str, request: Request,
     if not is_valid:
         raise HTTPException(status_code=400, detail=message)
 
+    # Check if job already exists for this session (prevent duplicate jobs from same token)
+    from .database import get_db_connection
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, student_name, student_nim FROM upload_jobs
+            WHERE qr_session_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        """, (session['id'],))
+        existing_job = cursor.fetchone()
+
+        if existing_job:
+            # Job already exists for this session, return the existing one
+            # Only update name/nim if they provided different ones
+            cursor.execute("""
+                UPDATE upload_jobs SET student_name = ?, student_nim = ?
+                WHERE id = ?
+            """, (student_name, student_nim, existing_job['id']))
+            return {
+                "job_id": existing_job['id'],
+                "status": "waiting_upload",
+                "message": "Sesi upload sudah ada. Melanjutkan upload file."
+            }
+
     # Create job (identity only, no files yet)
     import uuid
     job_id = str(uuid.uuid4())

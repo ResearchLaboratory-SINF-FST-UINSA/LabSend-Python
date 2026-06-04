@@ -335,15 +335,23 @@
                 return;
             }
 
+            // Prevent double submission
+            if (window.isSubmittingIdentity) {
+                return;
+            }
+            window.isSubmittingIdentity = true;
+
             var name = document.getElementById('input-name').value.trim();
             var nim = document.getElementById('input-nim').value.trim();
 
             if (!name) {
                 showToast('Mohon isi nama lengkap');
+                window.isSubmittingIdentity = false;
                 return;
             }
             if (!nim || !/^\d+$/.test(nim)) {
                 showToast('NIM harus angka');
+                window.isSubmittingIdentity = false;
                 return;
             }
 
@@ -365,8 +373,10 @@
 
                 if (response.ok) {
                     jobId = data.job_id;
+                    window.isSubmittingIdentity = false;
                     showStep('upload');
                 } else {
+                    window.isSubmittingIdentity = false;
                     // Handle expired token error
                     if (response.status === 400) {
                         isTokenValid = false;
@@ -376,6 +386,7 @@
                     showToast(data.detail || 'Gagal validasi');
                 }
             } catch (e) {
+                window.isSubmittingIdentity = false;
                 showToast('Error koneksi: ' + e.message);
             }
         }

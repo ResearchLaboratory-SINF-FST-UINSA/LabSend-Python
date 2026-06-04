@@ -339,7 +339,7 @@
                         </thead>
                         <tbody id="quick-table-body">
                             {% for job in jobs[:5] %}
-                            <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" onclick="toggleJobDetails('{{ job.id }}')">
+                            <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" id="quick-job-row-{{ job.id }}" data-job-id="{{ job.id }}" onclick="toggleQuickJobDetails('{{ job.id }}')">
                                 <td class="px-4 py-3" onclick="event.stopPropagation()">
                                     <input type="checkbox" class="file-checkbox-quick w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" data-job-id="{{ job.id }}">
                                 </td>
@@ -381,7 +381,7 @@
                                 </td>
                             </tr>
                             {% if job.files %}
-                            <tr id="details-row-{{ job.id }}" class="hidden">
+                            <tr id="quick-details-row-{{ job.id }}" class="hidden">
                                 <td colspan="9" class="p-0 bg-indigo-50">
                                     {% for file in job.files %}
                                     <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-3 px-4 py-2 border-t border-gray-200 hover:bg-indigo-100 transition-all">
@@ -485,8 +485,11 @@
                                         <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-2 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Mark Printed">
                                             <span class="material-symbols-outlined text-lg">check_circle</span>
                                         </button>
-                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-2 hover:bg-red-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors" title="Hapus Record">
-                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-2 hover:bg-yellow-100 rounded-lg text-gray-500 hover:text-yellow-600 transition-colors" title="Tolak">
+                                            <span class="material-symbols-outlined text-lg">cancel</span>
+                                        </button>
+                                        <button onclick="hardDeleteJob('{{ job.id }}', this)" class="p-2 hover:bg-red-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors" title="Hapus Permanen">
+                                            <span class="material-symbols-outlined text-lg">delete_forever</span>
                                         </button>
                                     </div>
                                 </td>
@@ -824,11 +827,32 @@
         // Filter jobs
         function filterJobs(status) {
             var rows = document.querySelectorAll('#jobs-table-body tr');
+
+            // First, hide ALL detail rows when filtering
+            document.querySelectorAll('#jobs-table-body tr[id^="details-row-"]').forEach(function(row) {
+                row.classList.add('hidden');
+                row.style.display = 'none';
+            });
+
             rows.forEach(function(row) {
+                // Skip detail rows (they have id starting with details-row-)
+                if (row.id && row.id.startsWith('details-row-')) {
+                    return;
+                }
+
+                // Main job rows (with data-status attribute)
                 if (status === 'all' || row.dataset.status === status) {
                     row.classList.remove('hidden');
+                    row.style.display = '';
                 } else {
                     row.classList.add('hidden');
+                    row.style.display = 'none';
+                    // Also hide the corresponding details row
+                    var detailsRow = document.getElementById('details-row-' + row.dataset.jobId);
+                    if (detailsRow) {
+                        detailsRow.classList.add('hidden');
+                        detailsRow.style.display = 'none';
+                    }
                 }
             });
 
@@ -841,6 +865,63 @@
             var activeBtn = document.getElementById('filter-' + status);
             if (activeBtn) {
                 activeBtn.className = activeBtn.className.replace('bg-gray-100', 'bg-indigo-100').replace('text-gray-700', 'text-indigo-700');
+            }
+        }
+
+        // Toggle job details dropdown
+        function toggleJobDetails(jobId) {
+            var jobRow = document.getElementById('job-row-' + jobId);
+            var detailsRow = document.getElementById('details-row-' + jobId);
+
+            // Don't toggle if job row is hidden (filtered out)
+            if (jobRow && (jobRow.classList.contains('hidden') || jobRow.style.display === 'none')) {
+                return;
+            }
+
+            if (detailsRow) {
+                if (detailsRow.classList.contains('hidden')) {
+                    // Hide all other details rows in jobs-table-body
+                    document.querySelectorAll('#jobs-table-body tr[id^="details-row-"]').forEach(function(row) {
+                        row.classList.add('hidden');
+                        row.style.display = 'none';
+                    });
+                    // Show this one
+                    detailsRow.classList.remove('hidden');
+                    detailsRow.style.display = '';
+                    // Save to sessionStorage
+                    sessionStorage.setItem('labsend_expanded_job', jobId);
+                } else {
+                    detailsRow.classList.add('hidden');
+                    detailsRow.style.display = 'none';
+                    // Clear from sessionStorage
+                    sessionStorage.removeItem('labsend_expanded_job');
+                }
+            }
+        }
+
+        // Toggle job details dropdown for Quick Queue table
+        function toggleQuickJobDetails(jobId) {
+            var jobRow = document.getElementById('quick-job-row-' + jobId);
+            var detailsRow = document.getElementById('quick-details-row-' + jobId);
+
+            if (detailsRow) {
+                if (detailsRow.classList.contains('hidden')) {
+                    // Hide all other details rows in quick-table-body
+                    document.querySelectorAll('#quick-table-body tr[id^="quick-details-row-"]').forEach(function(row) {
+                        row.classList.add('hidden');
+                        row.style.display = 'none';
+                    });
+                    // Show this one
+                    detailsRow.classList.remove('hidden');
+                    detailsRow.style.display = '';
+                    // Save to sessionStorage
+                    sessionStorage.setItem('labsend_expanded_job', jobId);
+                } else {
+                    detailsRow.classList.add('hidden');
+                    detailsRow.style.display = 'none';
+                    // Clear from sessionStorage
+                    sessionStorage.removeItem('labsend_expanded_job');
+                }
             }
         }
 
@@ -861,29 +942,6 @@
                 showToast(data.message);
             } catch (e) {
                 showToast('Error opening folder');
-            }
-        }
-
-        // Toggle job details dropdown
-        function toggleJobDetails(jobId) {
-            var detailsRow = document.getElementById('details-row-' + jobId);
-            var currentExpanded = sessionStorage.getItem('labsend_expanded_job');
-
-            if (detailsRow) {
-                if (detailsRow.classList.contains('hidden')) {
-                    // Hide all other details rows
-                    document.querySelectorAll('[id^="details-row-"]').forEach(function(row) {
-                        row.classList.add('hidden');
-                    });
-                    // Show this one
-                    detailsRow.classList.remove('hidden');
-                    // Save to sessionStorage
-                    sessionStorage.setItem('labsend_expanded_job', jobId);
-                } else {
-                    detailsRow.classList.add('hidden');
-                    // Clear from sessionStorage
-                    sessionStorage.removeItem('labsend_expanded_job');
-                }
             }
         }
 
