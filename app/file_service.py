@@ -175,7 +175,7 @@ def delete_file(file_id: str) -> Tuple[bool, str]:
             file_path.unlink()
 
         # Update database status
-        update_file_status(file_id, 'deleted')
+        update_file_status(file_id, 'deleted', 'deleted_at')
 
         return True, "File berhasil dihapus."
     except Exception as e:

@@ -11,7 +11,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 
-from .config import get_config, get_upload_folder
+from .config import get_config, get_upload_folder, DATABASE_FILE
 from .database import (
     get_all_jobs, update_job_status, update_file_status,
     get_files_by_job, get_db_connection
@@ -62,17 +62,20 @@ def get_expired_qr_sessions() -> List[Dict[str, Any]]:
 
 def delete_job(job: Dict[str, Any], hours: int = 24) -> Dict[str, int]:
     """
-    Hapus sebuah job beserta file-file dan foldernya.
+    Hapus sebuah job beserta file-file, folder, dan record database.
 
     Returns: dict dengan count deleted items
     """
+    import sqlite3
+    from .config import DATABASE_FILE
+
     job_id = job['id']
     deleted_files = 0
     deleted_folders = 0
     failed_count = 0
 
     try:
-        # Get all files for this job from database
+        # Step 1: Get all files for this job from database
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -81,10 +84,10 @@ def delete_job(job: Dict[str, Any], hours: int = 24) -> Dict[str, int]:
             """, (job_id,))
             files = cursor.fetchall()
 
-        # Get folder paths to delete
+        # Step 2: Get folder paths to delete
         folder_paths = set()
 
-        # Delete each file from disk and update database
+        # Step 3: Delete each file from disk
         for file_record in files:
             file_path = Path(file_record['file_path'])
 
@@ -92,22 +95,16 @@ def delete_job(job: Dict[str, Any], hours: int = 24) -> Dict[str, int]:
                 if file_path.exists():
                     file_path.unlink()
                     deleted_files += 1
-
-                # Update database status
-                cursor.execute("""
-                    UPDATE uploaded_files
-                    SET status = 'deleted', deleted_at = ?
-                    WHERE id = ?
-                """, (datetime.now().isoformat(), file_record['id']))
+                    print(f"[cleanup] Deleted file: {file_path}")
 
                 # Track folder for potential deletion
                 folder_paths.add(file_path.parent)
 
             except Exception as e:
-                print(f"Error deleting file {file_record['id']}: {e}")
+                print(f"[cleanup] Error deleting file {file_record['id']}: {e}")
                 failed_count += 1
 
-        # Delete job folder if empty or contains only hidden files
+        # Step 4: Delete job folder if exists
         for folder_path in folder_paths:
             try:
                 if folder_path.exists():
@@ -121,24 +118,58 @@ def delete_job(job: Dict[str, Any], hours: int = 24) -> Dict[str, int]:
                                 pass
                         folder_path.rmdir()
                         deleted_folders += 1
+                        print(f"[cleanup] Deleted empty folder: {folder_path}")
                     else:
                         # Not empty, delete all contents
                         shutil.rmtree(str(folder_path))
                         deleted_folders += 1
+                        print(f"[cleanup] Deleted non-empty folder: {folder_path}")
 
             except Exception as e:
-                print(f"Error deleting folder {folder_path}: {e}")
+                print(f"[cleanup] Error deleting folder {folder_path}: {e}")
                 failed_count += 1
 
-        # Update job status in database
-        cursor.execute("""
-            UPDATE upload_jobs
-            SET status = 'deleted', deleted_at = ?
-            WHERE id = ?
-        """, (datetime.now().isoformat(), job_id))
+        # Step 5: Delete records from database (PERMANENT DELETE)
+        try:
+            conn = sqlite3.connect(DATABASE_FILE)
+            cursor = conn.cursor()
+
+            # Delete from uploaded_files table
+            cursor.execute("DELETE FROM uploaded_files WHERE job_id = ?", (job_id,))
+            print(f"[cleanup] Deleted files from uploaded_files for job: {job_id}")
+
+            # Delete from print_jobs table
+            cursor.execute("DELETE FROM print_jobs WHERE upload_job_id = ?", (job_id,))
+            print(f"[cleanup] Deleted print_jobs for job: {job_id}")
+
+            # Delete from upload_jobs table
+            cursor.execute("DELETE FROM upload_jobs WHERE id = ?", (job_id,))
+            print(f"[cleanup] Deleted job from upload_jobs: {job_id}")
+
+            conn.commit()
+            conn.close()
+
+            # Step 6: Verify deletion
+            conn2 = sqlite3.connect(DATABASE_FILE)
+            cursor2 = conn2.cursor()
+            cursor2.execute("SELECT COUNT(*) as count FROM upload_jobs WHERE id = ?", (job_id,))
+            remaining_jobs = cursor2.fetchone()[0]
+            cursor2.execute("SELECT COUNT(*) as count FROM uploaded_files WHERE job_id = ?", (job_id,))
+            remaining_files = cursor2.fetchone()[0]
+            conn2.close()
+
+            print(f"[cleanup] Verification - remaining jobs: {remaining_jobs}, files: {remaining_files}")
+
+            if remaining_jobs > 0 or remaining_files > 0:
+                failed_count += 1
+                print(f"[cleanup] WARNING: Job not fully deleted from database")
+
+        except Exception as e:
+            print(f"[cleanup] Error deleting from database: {e}")
+            failed_count += 1
 
     except Exception as e:
-        print(f"Error deleting job {job_id}: {e}")
+        print(f"[cleanup] Error deleting job {job_id}: {e}")
         failed_count += 1
 
     return {

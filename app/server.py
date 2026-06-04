@@ -365,11 +365,86 @@ async def mark_printed(file_id: str, request: Request):
     return {"success": success, "message": message}
 
 
+# ============ Bulk File Actions ============
+
+@app.post("/api/files/mark-printed")
+async def bulk_mark_printed(request: Request):
+    """Mark multiple files as printed."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    try:
+        body = await request.json()
+        file_ids = body.get("file_ids", [])
+
+        if not file_ids:
+            return {"success": False, "message": "Tidak ada file dipilih"}
+
+        from .database import get_files_by_job, get_upload_job
+        from .file_service import get_file_path
+
+        marked_count = 0
+        for file_id in file_ids:
+            # Get file info
+            from .database import get_uploaded_file
+            file_record = get_uploaded_file(file_id)
+            if not file_record:
+                continue
+
+            # Update file status to printed
+            from .database import update_file_status
+            update_file_status(file_id, 'printed', 'printed_at')
+            marked_count += 1
+
+            # Also update job status if needed
+            job_id = file_record['job_id']
+            job = get_upload_job(job_id)
+            if job:
+                from .database import update_job_status
+                update_job_status(job_id, 'printed')
+
+        return {
+            "success": True,
+            "message": f"{marked_count} file ditandai sudah dicetak."
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}
+
+
+@app.post("/api/files/delete")
+async def bulk_delete_files(request: Request):
+    """Delete multiple files."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    try:
+        body = await request.json()
+        file_ids = body.get("file_ids", [])
+
+        if not file_ids:
+            return {"success": False, "message": "Tidak ada file dipilih"}
+
+        from .file_service import delete_file
+
+        deleted_count = 0
+        for file_id in file_ids:
+            success, message = delete_file(file_id)
+            if success:
+                deleted_count += 1
+
+        return {
+            "success": True,
+            "message": f"{deleted_count} file dihapus."
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}
+
+
 # ============ Job Actions ============
 
 @app.post("/api/jobs/{job_id}/reject")
 async def reject_job_api(job_id: str, request: Request):
-    """Reject a job."""
+    """Reject a job (mark as rejected, keep files for tracking)."""
     if not is_localhost(request):
         raise HTTPException(status_code=403, detail="Akses ditolak")
 
@@ -377,13 +452,27 @@ async def reject_job_api(job_id: str, request: Request):
     return {"success": success, "message": message}
 
 
-@app.delete("/api/jobs/{job_id}")
+@app.post("/api/jobs/{job_id}/delete")
 async def delete_job_api(job_id: str, request: Request):
-    """Delete a job."""
+    """Delete a job completely from database and filesystem."""
     if not is_localhost(request):
         raise HTTPException(status_code=403, detail="Akses ditolak")
 
-    success, message = reject_job(job_id)
+    print(f"[API] delete_job called for job_id: {job_id}")
+    from .upload_service import hard_delete_job
+    success, message = hard_delete_job(job_id)
+    print(f"[API] delete_job result: success={success}, message={message}")
+    return {"success": success, "message": message}
+
+
+@app.delete("/api/jobs/{job_id}")
+async def delete_job_api_delete(job_id: str, request: Request):
+    """Delete a job completely from database and filesystem (RESTful DELETE)."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    from .upload_service import hard_delete_job
+    success, message = hard_delete_job(job_id)
     return {"success": success, "message": message}
 
 

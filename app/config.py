@@ -22,6 +22,7 @@ else:
 
 DATA_DIR = BASE_DIR / "data"
 CONFIG_FILE = DATA_DIR / "config.json"
+DATABASE_FILE = DATA_DIR / "labsend.db"
 
 # Default configuration
 DEFAULT_CONFIG = {

@@ -97,7 +97,8 @@ def init_database():
                 created_at TEXT NOT NULL,
                 viewed_at TEXT,
                 downloaded_at TEXT,
-                printed_at TEXT
+                printed_at TEXT,
+                deleted_at TEXT
             )
         """)
 
@@ -120,6 +121,12 @@ def init_database():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_qr_status ON qr_sessions(status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_status ON upload_jobs(status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_files_job ON uploaded_files(job_id)")
+
+        # Migration: Add missing columns if they don't exist
+        cursor.execute("PRAGMA table_info(uploaded_files)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'deleted_at' not in columns:
+            cursor.execute("ALTER TABLE uploaded_files ADD COLUMN deleted_at TEXT")
 
 
 # ============ Settings Functions ============
