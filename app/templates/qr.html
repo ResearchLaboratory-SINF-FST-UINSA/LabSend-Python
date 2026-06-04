@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="html-root">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>QR Display - LabSend Print Transfer</title>
+    <link id="favicon-link" rel="icon" type="image/png" href="{{ config.app_icon_url or '' }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+        }
+        .dark .bg-white, .dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-indigo-50, .dark .bg-indigo-100, .dark .bg-green-50, .dark .bg-green-100, .dark .bg-red-50, .dark .bg-red-100, .dark .bg-yellow-50, .dark .bg-yellow-100, .dark .bg-purple-50, .dark .bg-purple-100, .dark .bg-blue-50, .dark .bg-blue-100, .dark .bg-orange-50, .dark .bg-orange-100 {
+            background-color: #1e293b !important;
+        }
+        .dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700, .dark .text-gray-600, .dark .text-gray-500, .dark .text-gray-400,
+        .dark .text-indigo-600, .dark .text-indigo-700, .dark .text-indigo-800,
+        .dark .text-green-600, .dark .text-green-700, .dark .text-green-800,
+        .dark .text-red-500, .dark .text-red-600, .dark .text-red-700,
+        .dark .text-yellow-600, .dark .text-yellow-700,
+        .dark .text-purple-600, .dark .text-purple-700,
+        .dark .text-blue-600, .dark .text-blue-700,
+        .dark .text-orange-500, .dark .text-orange-600 {
+            color: #f1f5f9 !important;
+        }
+        .dark .border-gray-200, .dark .border-gray-300, .dark .border-gray-100,
+        .dark .border-indigo-100, .dark .border-indigo-200 {
+            border-color: #334155 !important;
+        }
+        .dark .shadow-lg, .dark .shadow-md, .dark .shadow-sm {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4) !important;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+        }
+        .qr-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .file-item:hover {
+            transform: translateY(-2px);
+        }
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .dark * { scrollbar-color: #475569 transparent; }
+    </style>
+    <script>
+        (function() {
+            var theme = '{{ config.theme | default("light") }}';
+            var htmlRoot = document.getElementById('html-root');
+            if (theme === 'dark') {
+                htmlRoot.classList.remove('light');
+                htmlRoot.classList.add('dark');
+            } else if (theme === 'system') {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    htmlRoot.classList.remove('light');
+                    htmlRoot.classList.add('dark');
+                }
+            }
+        })();
+    </script>
+</head>
+<body class="min-h-screen p-4 md:p-6">
+
+    <div class="w-full max-w-[1400px] mx-auto">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden">
+                    {% if config.app_icon_url %}
+                    <img src="{{ config.app_icon_url }}" alt="Logo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='L'; this.parentElement.classList.add('flex','items-center','justify-center'); this.parentElement.classList.remove('overflow-hidden');">
+                    {% else %}L{% endif %}
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-indigo-600">LabSend</h1>
+                    <p class="text-sm text-gray-500">Print Transfer System</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100">
+                    <span class="material-symbols-outlined text-xl">wifi</span>
+                    <span class="font-medium text-sm">{{ wifi_name }}</span>
+                </div>
+                <a href="/admin" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700">
+                    <span class="material-symbols-outlined text-xl">dashboard</span>
+                    Dashboard
+                </a>
+                <button onclick="toggleFullscreen()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="Fullscreen">
+                    <span class="material-symbols-outlined text-xl">fullscreen</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3 Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Left Column - QR Code -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-600">qr_code_2</span>
+                    QR Code
+                </h2>
+
+                <!-- QR Code - Photo/Polaroid Style -->
+                <div class="flex justify-center mb-6">
+                    <div class="relative">
+                        <!-- Glow backdrop -->
+                        <div class="absolute -inset-6 bg-gradient-to-br from-indigo-400/20 via-purple-400/10 to-pink-400/20 rounded-3xl blur-2xl animate-pulse"></div>
+                        <!-- Photo/Polaroid Frame -->
+                        <div class="relative bg-white rounded-2xl shadow-2xl shadow-indigo-500/20 p-4 pb-6">
+                            <!-- Image container -->
+                            <div class="relative overflow-hidden rounded-xl shadow-inner ring-1 ring-slate-100">
+                                <img src="{{ qr_data.qr_image }}" alt="QR Code" class="w-48 h-48 md:w-56 md:h-56 block">
+                            </div>
+                            <!-- Caption -->
+                            <p class="text-center mt-3 text-xs font-medium text-slate-400 tracking-wider uppercase">Scan to Upload</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL Display with Copy & Open -->
+                <div class="bg-gray-100 rounded-lg border border-gray-200 p-4 mb-4">
+                    <p class="text-xs font-medium text-gray-500 uppercase mb-2">Upload URL</p>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="upload-url" readonly value="{{ server_url }}/u/{{ qr_data.token }}" class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-indigo-600 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button onclick="copyUrl()" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors" title="Salin URL">
+                            <span class="material-symbols-outlined text-xl">content_copy</span>
+                        </button>
+                        <a href="/u/{{ qr_data.token }}" target="_blank" class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors" title="Buka Halaman Upload">
+                            <span class="material-symbols-outlined text-xl">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Token Info -->
+                <div class="bg-indigo-50 rounded-lg border border-indigo-100 p-4 mb-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase mb-1">Token</p>
+                            <p class="text-lg font-bold font-mono text-indigo-600">{{ qr_data.token }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase mb-1">Berakhir dalam</p>
+                            <p id="countdown" class="text-lg font-bold text-green-600 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm animate-spin" style="animation-duration: 3s;">sync</span>
+                                <span>{{ qr_data.expires_in }}s</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-2">
+                    <button onclick="regenerateQR()" class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-xl">refresh</span>
+                        Regenerate QR
+                    </button>
+                </div>
+
+                <!-- Network Info -->
+                <div class="mt-4 pt-4 border-t border-gray-200 text-center">
+                    <p class="text-xs text-gray-400 flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-xs">wifi</span>
+                        IP: <span class="font-mono">{{ local_ip }}:4711</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Column - Uploaded Files -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-indigo-600">folder_open</span>
+                        File yang Diupload
+                    </h3>
+                    <span id="file-count" class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">0 file</span>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-files" class="text-center py-12 text-gray-500">
+                    <span class="material-symbols-outlined text-5xl animate-spin">hourglass_empty</span>
+                    <p class="mt-3">Memuat file...</p>
+                </div>
+
+                <!-- No Files Message -->
+                <div id="no-files-message" class="text-center py-12 text-gray-400 hidden">
+                    <span class="material-symbols-outlined text-5xl">folder_off</span>
+                    <p class="mt-3 font-medium">Belum ada file yang diupload</p>
+                    <p class="text-sm text-gray-400 mt-1">Scan QR dan upload file untuk melihat di sini</p>
+                </div>
+
+                <!-- File List -->
+                <div id="file-list" class="space-y-2 max-h-[500px] overflow-y-auto hidden"></div>
+            </div>
+
+            <!-- Third Column - Guide -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 mb-6">
+                    <span class="material-symbols-outlined text-indigo-600">help</span>
+                    Cara Pakainya Gampang!
+                </h3>
+
+                <div class="space-y-5">
+                    <!-- Step 1 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0 mt-1">1</div>
+                        <div>
+                            <p class="font-bold text-gray-800">Konek WiFi Dulu</p>
+                            <p class="text-sm text-gray-600 mt-1 leading-relaxed">Pastikan HP kamu udah nyambung ke WiFi kampus yang sama dengan WiFi laptop ini ya.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold flex-shrink-0 mt-1">2</div>
+                        <div>
+                            <p class="font-bold text-gray-800">Scan QR Code-nya</p>
+                            <p class="text-sm text-gray-600 mt-1 leading-relaxed">Buka kamera HP. Tapi lebih bagus kalau pencet tombol "Regenerate QR" dulu di layar ini biar waktunya penuh lagi, terus baru scan kotak QR-nya.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold flex-shrink-0 mt-1">3</div>
+                        <div>
+                            <p class="font-bold text-gray-800">Kirim Filenya!</p>
+                            <p class="text-sm text-gray-600 mt-1 leading-relaxed">Pilih file tugas kamu di HP dan pencet upload. Harus agak cepet soalnya QR ini ada batas waktunya lho!</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold flex-shrink-0 mt-1">4</div>
+                        <div>
+                            <p class="font-bold text-gray-800">Cek & Print</p>
+                            <p class="text-sm text-gray-600 mt-1 leading-relaxed">Kalau udah, filenya bakal muncul di tengah. Klik filenya buat dilihat, terus tinggal print deh!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex gap-3 items-start">
+                    <span class="material-symbols-outlined text-indigo-500 mt-0.5">info</span>
+                    <p class="text-sm text-indigo-800 leading-relaxed">
+                        <strong>Ingat ya:</strong> Kalau angka waktunya habis (nol), QR-nya bakal ganti otomatis. Kamu harus ulang scan pakai QR yang baru muncul.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium text-sm shadow-lg hidden z-50"></div>
+
+    <!-- Powered By Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 text-center">
+        <p class="text-[11px] text-gray-500">
+            Powered by <span class="font-semibold text-gray-700">Laboratorium FST UINSA</span> & <span class="font-semibold text-gray-700">SINF UINSA</span>
+            <span class="mx-1">•</span>
+            Copyright by <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a> 2026
+        </p>
+    </footer>
+
+    <script>
+        var token = '{{ qr_data.token }}';
+        var qrExpiresIn = parseInt('{{ qr_data.expires_in }}', 10) || 120;
+        var countdownValue = qrExpiresIn;
+        var countdownEl = document.getElementById('countdown');
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+        }
+
+        function getFileIcon(ext) {
+            ext = ext.toLowerCase();
+            if (ext === 'pdf') return 'picture_as_pdf';
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].indexOf(ext) !== -1) return 'image';
+            if (['doc', 'docx'].indexOf(ext) !== -1) return 'description';
+            if (['xls', 'xlsx'].indexOf(ext) !== -1) return 'table_chart';
+            if (['ppt', 'pptx'].indexOf(ext) !== -1) return 'slideshow';
+            if (ext === 'txt') return 'article';
+            return 'insert_drive_file';
+        }
+
+        function getFileColor(ext) {
+            ext = ext.toLowerCase();
+            if (ext === 'pdf') return 'text-red-500 bg-red-50';
+            if (['jpg', 'jpeg', 'png', 'gif'].indexOf(ext) !== -1) return 'text-blue-500 bg-blue-50';
+            if (['doc', 'docx'].indexOf(ext) !== -1) return 'text-blue-600 bg-blue-50';
+            if (['xls', 'xlsx'].indexOf(ext) !== -1) return 'text-green-600 bg-green-50';
+            if (['ppt', 'pptx'].indexOf(ext) !== -1) return 'text-orange-500 bg-orange-50';
+            return 'text-gray-500 bg-gray-50';
+        }
+
+        async function loadUploadedFiles() {
+            var fileList = document.getElementById('file-list');
+            var noFilesMsg = document.getElementById('no-files-message');
+            var loadingFiles = document.getElementById('loading-files');
+            var fileCount = document.getElementById('file-count');
+
+            try {
+                var response = await fetch('/api/token/' + token + '/files');
+                var data = await response.json();
+
+                loadingFiles.classList.add('hidden');
+
+                if (data.files && data.files.length > 0) {
+                    noFilesMsg.classList.add('hidden');
+                    fileList.classList.remove('hidden');
+                    fileCount.textContent = data.files.length + ' file';
+                    fileList.innerHTML = '';
+
+                    data.files.forEach(function(file) {
+                        var icon = getFileIcon(file.extension);
+                        var colorClass = getFileColor(file.extension);
+                        var sizeStr = formatSize(file.size_bytes);
+
+                        var item = document.createElement('a');
+                        item.href = '/files/' + file.id + '/view';
+                        item.target = '_blank';
+                        item.className = 'file-item flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition-all';
+
+                        item.innerHTML =
+                            '<div class="w-10 h-10 rounded-lg flex items-center justify-center ' + colorClass + '">' +
+                            '<span class="material-symbols-outlined text-xl">' + icon + '</span></div>' +
+                            '<div class="flex-1 min-w-0">' +
+                            '<p class="font-medium text-gray-800 truncate">' + file.original_name + '</p>' +
+                            '<p class="text-xs text-gray-500">' + sizeStr + ' &bull; ' + file.extension.toUpperCase() + '</p></div>' +
+                            '<div class="flex items-center gap-1 text-indigo-600">' +
+                            '<span class="material-symbols-outlined">open_in_new</span></div>';
+
+                        fileList.appendChild(item);
+                    });
+                } else {
+                    noFilesMsg.classList.remove('hidden');
+                    fileList.classList.add('hidden');
+                    fileCount.textContent = '0 file';
+                }
+            } catch (e) {
+                console.error('Error loading files:', e);
+                loadingFiles.classList.add('hidden');
+                noFilesMsg.classList.remove('hidden');
+            }
+        }
+
+        loadUploadedFiles();
+        setInterval(loadUploadedFiles, 5000);
+
+        function updateCountdown() {
+            if (countdownValue > 0) {
+                countdownValue--;
+                var secondsSpan = countdownEl.querySelector('span:last-child');
+                if (secondsSpan) {
+                    secondsSpan.textContent = countdownValue;
+                }
+                if (countdownValue < 30) {
+                    countdownEl.classList.remove('text-green-600');
+                    countdownEl.classList.add('text-red-500');
+                }
+                setTimeout(updateCountdown, 1000);
+            } else {
+                regenerateQR();
+            }
+        }
+        updateCountdown();
+
+        function copyUrl() {
+            var urlInput = document.getElementById('upload-url');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(urlInput.value).then(function() {
+                showToast('URL berhasil disalin!');
+            }).catch(function() {
+                document.execCommand('copy');
+                showToast('URL berhasil disalin!');
+            });
+        }
+
+        async function regenerateQR() {
+            try {
+                showToast('Regenerating QR...');
+                var response = await fetch('/api/qr/regenerate', { method: 'POST' });
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showToast('Gagal regenerate QR');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(function() {
+                toast.classList.add('hidden');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

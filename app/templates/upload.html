@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="html-root">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Upload File - LabSend</title>
+    <link id="favicon-link" rel="icon" type="image/png" href="{{ config.app_icon_url or '' }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+            color: #0b1c30;
+        }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+        }
+        .dark .bg-white, .dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-indigo-50, .dark .bg-indigo-100, .dark .bg-green-100, .dark .bg-red-100 {
+            background-color: #1e293b !important;
+        }
+        .dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700, .dark .text-gray-600, .dark .text-gray-500, .dark .text-gray-400,
+        .dark .text-indigo-600, .dark .text-indigo-700, .dark .text-green-600, .dark .text-red-600, .dark .text-orange-600 {
+            color: #f1f5f9 !important;
+        }
+        .dark .border-gray-200, .dark .border-gray-300 {
+            border-color: #475569 !important;
+        }
+        .dark header, .dark footer {
+            background-color: #1e293b !important;
+            border-color: #475569 !important;
+        }
+        .dark .text-white {
+            color: #f1f5f9 !important;
+        }
+        .dark footer .text-gray-500 { color: #94a3b8 !important; }
+        .dark footer .text-gray-700 { color: #e2e8f0 !important; }
+
+        /* Dark mode hover states */
+        .dark .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.05) !important; }
+        .dark .hover\:bg-gray-200:hover { background-color: rgba(255,255,255,0.08) !important; }
+        .dark .hover\:bg-indigo-700:hover { background-color: #4338ca !important; }
+        .dark .hover\:bg-green-100:hover { background-color: rgba(34, 197, 94, 0.15) !important; }
+        .dark .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.15) !important; }
+        .dark .hover\:text-green-600:hover { color: #4ade80 !important; }
+        .dark .hover\:text-red-600:hover { color: #f87171 !important; }
+
+        /* Custom Scrollbar - Aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .dark * {
+            scrollbar-color: #475569 transparent;
+        }
+
+        body, header, .bg-white, .bg-gray-50 {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+    <script>
+        (function() {
+            var theme = '{{ config.theme | default("light") }}';
+            var htmlRoot = document.getElementById('html-root');
+            if (theme === 'dark') {
+                htmlRoot.classList.remove('light');
+                htmlRoot.classList.add('dark');
+            } else if (theme === 'system') {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    htmlRoot.classList.remove('light');
+                    htmlRoot.classList.add('dark');
+                }
+            }
+        })();
+    </script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header Bar -->
+    <header class="bg-white text-indigo-600 shadow-sm flex justify-between items-center w-full px-4 md:px-6 h-16 top-0 z-10 sticky border-b border-gray-200">
+        <div class="flex items-center gap-3">
+            <div class="app-logo-container w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden">
+                {% if config.app_icon_url %}
+                <img src="{{ config.app_icon_url }}" alt="Logo" class="app-logo w-full h-full object-cover" onerror="this.parentElement.innerHTML='L'; this.parentElement.classList.add('flex','items-center','justify-center'); this.parentElement.classList.remove('overflow-hidden');">
+                {% else %}L{% endif %}
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-indigo-600">{{ app_name }}</h1>
+                <p class="text-xs text-gray-500">{{ lab_name }}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="text-sm text-gray-500 font-mono">
+                Token: <span id="header-token" class="text-indigo-600 font-bold">{{ token }}</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-hidden bg-gray-50">
+        <div class="flex-1 overflow-y-auto p-4 md:p-6">
+
+            <!-- Token Expired State -->
+            <div id="token-expired" class="bg-white rounded-xl border border-gray-200 shadow-sm max-w-md mx-auto w-full mt-6 p-8 text-center hidden">
+                <div class="w-20 h-20 bg-red-100 text-red-500 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-[48px]">timer_off</span>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Token Kadaluarsa</h2>
+                <p class="text-gray-500 mb-6">Token sudah tidak berlaku. Silakan scan QR Code baru untuk melanjutkan.</p>
+                <button onclick="location.reload()" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                    Refresh Halaman
+                </button>
+            </div>
+
+            <!-- Token Invalid State -->
+            <div id="token-invalid" class="bg-white rounded-xl border border-gray-200 shadow-sm max-w-md mx-auto w-full mt-6 p-8 text-center hidden">
+                <div class="w-20 h-20 bg-orange-100 text-orange-500 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-[48px]">error</span>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Token Tidak Valid</h2>
+                <p id="invalid-message" class="text-gray-500 mb-6">Token tidak valid atau sudah digunakan.</p>
+                <button onclick="location.reload()" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                    Refresh Halaman
+                </button>
+            </div>
+
+            <!-- Student Upload Card -->
+            <div id="upload-card" class="bg-white rounded-xl border border-gray-200 shadow-sm max-w-md mx-auto w-full mt-6">
+
+                <!-- Step 1: Identity Form -->
+                <div id="step-identity" class="p-6 space-y-5 block">
+                    <div>
+                        <span class="text-[11px] font-medium tracking-wider text-indigo-600 uppercase font-bold">Step 1</span>
+                        <h2 class="text-xl font-bold text-gray-900 mt-1">Identitas Mahasiswa</h2>
+                        <p class="text-sm text-gray-500 mt-1">Isi data dirimu untuk melanjutkan upload file.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-2">Nama Lengkap</label>
+                        <input type="text" id="input-name" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g. Budi Santoso">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-2">NIM (Nomor Induk Mahasiswa)</label>
+                        <input type="text" id="input-nim" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-base font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g. 13521001" maxlength="15">
+                    </div>
+
+                    <button onclick="submitIdentity()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2">
+                        <span>Next</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </button>
+                </div>
+
+                <!-- Step 2: File Upload -->
+                <div id="step-upload" class="p-6 space-y-5 hidden">
+                    <div>
+                        <span class="text-[11px] font-medium tracking-wider text-indigo-600 uppercase font-bold">Step 2</span>
+                        <h2 class="text-xl font-bold text-gray-900 mt-1">Upload File</h2>
+                        <p class="text-sm text-gray-500 mt-1">Pilih file yang ingin kamu print.</p>
+                    </div>
+
+                    <div id="upload-limits" class="text-xs text-gray-600 bg-gray-100 py-2 px-4 rounded border border-gray-200">
+                        Max: <span id="limit-file-size" class="text-indigo-600 font-bold">{{ config.max_file_size_mb or 50 }} MB</span> per file | <span id="limit-total-size" class="text-green-600 font-bold">{{ config.max_total_upload_mb or 200 }} MB</span> total | <span id="limit-file-count" class="text-purple-600 font-bold">{{ config.max_files_per_session or 10 }} file</span>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div id="dropzone" class="border-2 border-dashed border-gray-300 hover:border-indigo-500 bg-gray-50 rounded-xl p-8 text-center cursor-pointer transition-all">
+                        <span class="material-symbols-outlined text-[48px] text-gray-400">cloud_upload</span>
+                        <p class="text-base font-semibold text-gray-700 mt-2">Klik untuk pilih file</p>
+                        <p class="text-[11px] text-gray-400 mt-1">atau drag & drop file di sini</p>
+                        <p class="text-[10px] text-gray-400 mt-3">{{ '.' + config.allowed_extensions | join(',.') if config.allowed_extensions else '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png' }}</p>
+                        <button type="button" onclick="document.getElementById('file-input').click()" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm">
+                            Pilih File
+                        </button>
+                    </div>
+
+                    <input type="file" id="file-input" multiple class="hidden" accept="{{ '.' + config.allowed_extensions | join(',.') if config.allowed_extensions else '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png' }}" onchange="handleFileSelect(this.files)">
+
+                    <!-- Accepted Extensions Info -->
+                    <p class="text-[10px] text-gray-400 mt-2 text-center">Format yang diterima: <span id="accepted-extensions" class="font-medium">{{ '.' + config.allowed_extensions | join(', .') if config.allowed_extensions else '.pdf, .doc, .docx, .jpg, .png' }}</span></p>
+
+                    <!-- Selected Files List -->
+                    <div id="file-list" class="space-y-2 hidden">
+                        <p class="text-xs font-semibold text-gray-500 uppercase">File Terpilih</p>
+                        <div id="selected-files" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div id="upload-progress" class="hidden space-y-2">
+                        <div class="flex justify-between text-xs font-semibold text-gray-500">
+                            <span>Mengupload...</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div id="progress-bar" class="bg-green-500 h-full w-0 transition-all duration-75"></div>
+                        </div>
+                        <p id="progress-status" class="text-xs text-gray-500 text-center">Memproses file...</p>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button onclick="goBackToIdentity()" class="flex-1 bg-gray-100 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                            Kembali
+                        </button>
+                        <button id="btn-upload" onclick="uploadFiles()" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                            Upload
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Success -->
+                <div id="step-success" class="p-6 space-y-5 hidden text-center">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 mx-auto rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[40px] font-bold">check_circle</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Upload Berhasil!</h2>
+                        <p class="text-sm text-gray-500 mt-2">File kamu sudah tersimpan di komputer lab dan siap untuk diprint.</p>
+                    </div>
+                    <div id="success-summary" class="bg-gray-50 rounded-lg p-4 text-left text-sm space-y-2 text-left"></div>
+                    <button onclick="resetForm()" class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                        Upload File Lain
+                    </button>
+                </div>
+
+                <!-- Error State -->
+                <div id="step-error" class="p-6 space-y-5 hidden text-center">
+                    <div class="w-16 h-16 bg-red-100 text-red-600 mx-auto rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[40px] font-bold">error</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Upload Gagal</h2>
+                        <p id="error-message" class="text-sm text-gray-500 mt-2">Terjadi kesalahan saat upload.</p>
+                    </div>
+                    <button onclick="resetForm()" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                        Coba Lagi
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Info Footer -->
+            <div class="max-w-md mx-auto w-full mt-6 text-center">
+                <p class="text-[11px] text-gray-400">
+                    <span class="material-symbols-outlined text-xs align-middle">info</span>
+                    File akan dicek oleh operator sebelum diprint.
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium text-sm shadow-lg hidden z-50"></div>
+
+    <!-- Powered By Footer -->
+    <footer class="bg-white border-t border-gray-200 py-3 px-4 text-center mt-auto">
+        <p class="text-[11px] text-gray-500">
+            Powered by <span class="font-semibold text-gray-700">Laboratorium FST UINSA</span> & <span class="font-semibold text-gray-700">SINF UINSA</span>
+            <span class="mx-1">•</span>
+            Copyright by <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a> 2026
+        </p>
+    </footer>
+
+    <script>
+        // State
+        var jobId = null;
+        var selectedFilesList = [];
+        var studentName = '';
+        var studentNim = '';
+        var token = '{{ token }}';
+        var isTokenValid = true;
+
+        // Upload limits from config
+        var maxFileSize = parseInt('{{ config.max_file_size_mb or 50 }}') * 1024 * 1024;
+        var maxTotalSize = parseInt('{{ config.max_total_upload_mb or 200 }}') * 1024 * 1024;
+        var maxFileCount = parseInt('{{ config.max_files_per_session or 10 }}');
+
+        // Validate token on page load
+        async function validateTokenOnLoad() {
+            try {
+                var response = await fetch('/api/token/' + token + '/status');
+                var data = await response.json();
+
+                if (!response.ok || !data.valid) {
+                    isTokenValid = false;
+                    document.getElementById('upload-card').classList.add('hidden');
+                    document.getElementById('token-expired').classList.remove('hidden');
+                    document.getElementById('invalid-message').textContent = data.message || 'Token tidak valid';
+                    return;
+                }
+
+                // Token valid, continue
+                document.getElementById('upload-card').classList.remove('hidden');
+                document.getElementById('token-expired').classList.add('hidden');
+                document.getElementById('token-invalid').classList.add('hidden');
+
+            } catch (e) {
+                console.error('Token validation error:', e);
+                // Continue anyway, let the form work
+            }
+        }
+
+        // Validate token on load
+        validateTokenOnLoad();
+
+        // Submit Identity
+        async function submitIdentity() {
+            if (!isTokenValid) {
+                showToast('Token sudah kadaluarsa. Silakan scan QR baru.');
+                return;
+            }
+
+            var name = document.getElementById('input-name').value.trim();
+            var nim = document.getElementById('input-nim').value.trim();
+
+            if (!name) {
+                showToast('Mohon isi nama lengkap');
+                return;
+            }
+            if (!nim || !/^\d+$/.test(nim)) {
+                showToast('NIM harus angka');
+                return;
+            }
+
+            studentName = name;
+            studentNim = nim;
+
+            // Submit to API
+            try {
+                var formData = new FormData();
+                formData.append('student_name', name);
+                formData.append('student_nim', nim);
+
+                var response = await fetch('/api/upload/' + token + '/identity', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                var data = await response.json();
+
+                if (response.ok) {
+                    jobId = data.job_id;
+                    showStep('upload');
+                } else {
+                    // Handle expired token error
+                    if (response.status === 400) {
+                        isTokenValid = false;
+                        document.getElementById('upload-card').classList.add('hidden');
+                        document.getElementById('token-expired').classList.remove('hidden');
+                    }
+                    showToast(data.detail || 'Gagal validasi');
+                }
+            } catch (e) {
+                showToast('Error koneksi: ' + e.message);
+            }
+        }
+
+        // Handle file selection
+        function handleFileSelect(files) {
+            var validFiles = [];
+            var errors = [];
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+
+                // Validate individual file size
+                if (file.size > maxFileSize) {
+                    var maxSizeMB = maxFileSize / (1024 * 1024);
+                    errors.push(file.name + ' - Ukuran melebihi ' + maxSizeMB.toFixed(0) + ' MB');
+                    continue;
+                }
+
+                // Check total size would exceed limit
+                var currentTotal = selectedFilesList.reduce(function(sum, f) { return sum + f.size; }, 0);
+                var newTotal = currentTotal + file.size;
+                if (newTotal > maxTotalSize) {
+                    var maxTotalMB = maxTotalSize / (1024 * 1024);
+                    errors.push(file.name + ' - Total upload akan melebihi ' + maxTotalMB.toFixed(0) + ' MB');
+                    continue;
+                }
+
+                // Check file count limit
+                if (selectedFilesList.length + validFiles.length >= maxFileCount) {
+                    errors.push('Jumlah file sudah mencapai batas maksimum (' + maxFileCount + ')');
+                    break;
+                }
+
+                validFiles.push(file);
+            }
+
+            // Show errors if any
+            if (errors.length > 0) {
+                showToast('File tidak ditambahkan:\n' + errors.slice(0, 3).join('\n') + (errors.length > 3 ? '\n...dan ' + (errors.length - 3) + ' lagi' : ''));
+            }
+
+            // Add valid files to list
+            selectedFilesList = selectedFilesList.concat(validFiles);
+            displaySelectedFiles();
+            updateTotalSize();
+        }
+
+        // Update total size display
+        function updateTotalSize() {
+            var totalSize = selectedFilesList.reduce(function(sum, f) { return sum + f.size; }, 0);
+            var totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
+            var maxTotalMB = maxTotalSize / (1024 * 1024);
+
+            // Update limits display with current usage
+            var limitsDiv = document.getElementById('upload-limits');
+            limitsDiv.innerHTML = 'Max: <span class="text-indigo-600 font-bold">' + (maxFileSize / 1024 / 1024).toFixed(0) + ' MB</span> per file | <span class="text-green-600 font-bold">' + totalSizeMB + ' / ' + maxTotalMB.toFixed(0) + ' MB</span> total | <span class="text-purple-600 font-bold">' + selectedFilesList.length + ' / ' + maxFileCount + ' file</span>';
+        }
+
+        // Display selected files
+        function displaySelectedFiles() {
+            var fileList = document.getElementById('file-list');
+            var selectedFiles = document.getElementById('selected-files');
+
+            if (selectedFilesList.length === 0) {
+                fileList.classList.add('hidden');
+                return;
+            }
+
+            fileList.classList.remove('hidden');
+            selectedFiles.innerHTML = '';
+
+            selectedFilesList.forEach(function(file, index) {
+                var sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                var item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-gray-100 border border-gray-200 p-3 rounded-lg';
+                item.innerHTML = '<div class="flex items-center gap-3">' +
+                    '<span class="material-symbols-outlined text-indigo-600 text-lg">description</span>' +
+                    '<div>' +
+                    '<p class="text-sm font-medium text-gray-800 truncate max-w-[200px]">' + file.name + '</p>' +
+                    '<p class="text-xs text-gray-500">' + sizeMB + ' MB</p>' +
+                    '</div></div>' +
+                    '<button onclick="removeFile(' + index + ')" class="p-1 hover:bg-red-100 rounded text-gray-400 hover:text-red-500">' +
+                    '<span class="material-symbols-outlined text-sm">close</span></button>';
+                selectedFiles.appendChild(item);
+            });
+        }
+
+        // Remove file from selection
+        function removeFile(index) {
+            selectedFilesList.splice(index, 1);
+            displaySelectedFiles();
+            updateTotalSize();
+        }
+
+        // Upload files
+        function uploadFiles() {
+            if (selectedFilesList.length === 0) {
+                showToast('Pilih file terlebih dahulu');
+                return;
+            }
+
+            // Final validation before upload
+            var totalSize = selectedFilesList.reduce(function(sum, f) { return sum + f.size; }, 0);
+            if (totalSize > maxTotalSize) {
+                showToast('Total ukuran file melebihi batas maksimum!');
+                return;
+            }
+            if (selectedFilesList.length > maxFileCount) {
+                showToast('Jumlah file melebihi batas maksimum!');
+                return;
+            }
+
+            var uploadBtn = document.getElementById('btn-upload');
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('opacity-50');
+
+            var progressDiv = document.getElementById('upload-progress');
+            var progressBar = document.getElementById('progress-bar');
+            var progressPercent = document.getElementById('progress-percent');
+            var progressStatus = document.getElementById('progress-status');
+
+            progressDiv.classList.remove('hidden');
+
+            var formData = new FormData();
+            if (jobId) {
+                formData.append('job_id', jobId);
+            }
+            selectedFilesList.forEach(function(file) {
+                formData.append('files', file);
+            });
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    var percent = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressPercent.textContent = percent + '%';
+                }
+            });
+
+            xhr.addEventListener('load', function() {
+                if (xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        showSuccess(data);
+                    } catch (e) {
+                        showError('Response tidak valid');
+                    }
+                } else {
+                    showError(xhr.responseText || 'Upload gagal');
+                }
+            });
+
+            xhr.addEventListener('error', function() {
+                showError('Error koneksi');
+            });
+
+            progressStatus.textContent = 'Mengupload ' + selectedFilesList.length + ' file...';
+            xhr.open('POST', '/api/upload/' + token + '/files');
+            xhr.send(formData);
+        }
+
+        // Show success
+        function showSuccess(data) {
+            showStep('success');
+
+            var summary = document.getElementById('success-summary');
+            summary.innerHTML = '' +
+                '<div class="flex justify-between"><span class="text-gray-500">Nama</span><span class="font-semibold text-gray-800">' + studentName + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-gray-500">NIM</span><span class="font-semibold text-gray-800 font-mono">' + studentNim + '</span></div>' +
+                '<div class="flex justify-between"><span class="text-gray-500">File</span><span class="font-semibold text-indigo-600">' + data.files_count + ' file</span></div>' +
+                '<div class="flex justify-between"><span class="text-gray-500">Total Size</span><span class="font-semibold text-green-600">' + (data.total_size / 1024 / 1024).toFixed(2) + ' MB</span></div>';
+        }
+
+        // Show error
+        function showError(message) {
+            showStep('error');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Go back to identity step
+        function goBackToIdentity() {
+            showStep('identity');
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-nim').value = '';
+            document.getElementById('file-input').value = '';
+            selectedFilesList = [];
+            jobId = null;
+            studentName = '';
+            studentNim = '';
+
+            var progressDiv = document.getElementById('upload-progress');
+            progressDiv.classList.add('hidden');
+            document.getElementById('progress-bar').style.width = '0%';
+
+            var uploadBtn = document.getElementById('btn-upload');
+            uploadBtn.disabled = false;
+            uploadBtn.classList.remove('opacity-50');
+
+            displaySelectedFiles();
+            showStep('identity');
+        }
+
+        // Show step
+        function showStep(step) {
+            var steps = ['identity', 'upload', 'success', 'error'];
+            steps.forEach(function(s) {
+                var el = document.getElementById('step-' + s);
+                if (el) el.classList.add('hidden');
+            });
+
+            var targetEl = document.getElementById('step-' + step);
+            if (targetEl) targetEl.classList.remove('hidden');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(function() {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        // Drag and drop
+        var dropzone = document.getElementById('dropzone');
+
+        dropzone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropzone.classList.add('border-indigo-500', 'bg-indigo-50');
+        });
+
+        dropzone.addEventListener('dragleave', function() {
+            dropzone.classList.remove('border-indigo-500', 'bg-indigo-50');
+        });
+
+        dropzone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropzone.classList.remove('border-indigo-500', 'bg-indigo-50');
+            handleFileSelect(e.dataTransfer.files);
+        });
+    </script>
+</body>
+</html>

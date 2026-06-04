@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="html-root">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - LabSend Print Transfer</title>
+    <link id="favicon-link" rel="icon" type="image/png" href="{{ config.app_icon_url or '' }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Dark mode styles */
+        .dark body {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+        }
+        .dark .bg-white, .dark .bg-gray-50, .dark .bg-gray-100 {
+            background-color: #1e293b !important;
+        }
+        .dark .bg-indigo-50, .dark .bg-indigo-100 {
+            background-color: #312e81 !important;
+        }
+        .dark .bg-green-100 { background-color: #14532d !important; }
+        .dark .bg-red-100 { background-color: #7f1d1d !important; }
+        .dark .bg-yellow-100 { background-color: #713f12 !important; }
+        .dark .bg-purple-100 { background-color: #581c87 !important; }
+        .dark .bg-blue-50, .dark .bg-blue-100 { background-color: #1e3a5f !important; }
+
+        /* Dark mode text - keep readable but not too bright */
+        .dark .text-gray-900, .dark .text-gray-800 { color: #f1f5f9 !important; }
+        .dark .text-gray-700 { color: #e2e8f0 !important; }
+        .dark .text-gray-600 { color: #cbd5e1 !important; }
+        .dark .text-gray-500 { color: #94a3b8 !important; }
+        .dark .text-gray-400 { color: #64748b !important; }
+        .dark .text-indigo-600, .dark .text-indigo-700 { color: #818cf8 !important; }
+        .dark .text-green-600, .dark .text-green-700 { color: #4ade80 !important; }
+        .dark .text-red-600 { color: #f87171 !important; }
+        .dark .text-purple-600 { color: #c084fc !important; }
+        .dark .text-yellow-600 { color: #fbbf24 !important; }
+        .dark .text-blue-600 { color: #60a5fa !important; }
+
+        /* Dark mode borders */
+        .dark .border-gray-200, .dark .border-gray-300, .dark .border-gray-100 {
+            border-color: #334155 !important;
+        }
+
+        /* Dark mode shadows */
+        .dark .shadow-sm, .dark .shadow-md, .dark .shadow-lg {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+        }
+
+        /* Dark mode sidebar fix - prevent scroll jumping */
+        .dark nav {
+            background-color: #1e293b !important;
+        }
+        .dark nav, .dark nav * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode header */
+        .dark header {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        /* Dark mode footer */
+        .dark footer {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        .dark footer .text-gray-500 { color: #94a3b8 !important; }
+        .dark footer .text-gray-700 { color: #e2e8f0 !important; }
+
+        /* Dark mode sidebar scrollbar */
+        .dark nav::-webkit-scrollbar {
+            width: 6px;
+        }
+        .dark nav::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .dark nav::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        /* Dark mode hover states - more subtle/darker */
+        .dark nav button:hover,
+        .dark nav a:hover {
+            background-color: rgba(255,255,255,0.05) !important;
+        }
+        .dark nav button:active,
+        .dark nav a:active {
+            background-color: rgba(255,255,255,0.08) !important;
+        }
+        .dark nav button.bg-indigo-100 {
+            background-color: #312e81 !important;
+        }
+        .dark .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.05) !important; }
+        .dark .hover\:bg-gray-200:hover { background-color: rgba(255,255,255,0.08) !important; }
+        .dark .hover\:bg-indigo-50:hover { background-color: rgba(99, 102, 241, 0.15) !important; }
+        .dark .hover\:bg-indigo-100:hover { background-color: rgba(99, 102, 241, 0.25) !important; }
+        .dark .hover\:bg-green-100:hover { background-color: rgba(34, 197, 94, 0.15) !important; }
+        .dark .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.15) !important; }
+        .dark .hover\:text-indigo-600:hover { color: #818cf8 !important; }
+        .dark .hover\:text-green-600:hover { color: #4ade80 !important; }
+        .dark .hover\:text-red-600:hover { color: #f87171 !important; }
+        .dark .hover\:bg-indigo-700:hover { background-color: #4338ca !important; }
+
+        /* Theme transition for smoother change */
+        body, nav, header, footer, .bg-white, .bg-gray-50, .bg-gray-100, .bg-indigo-50, .bg-indigo-100 {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        * {
+            transition: border-color 0.3s ease;
+        }
+
+        /* Custom Scrollbar - Aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .dark * {
+            scrollbar-color: #475569 transparent;
+        }
+    </style>
+    <script>
+        (function() {
+            var theme = '{{ config.theme | default("light") }}';
+            var htmlRoot = document.getElementById('html-root');
+            if (theme === 'dark') {
+                htmlRoot.classList.remove('light');
+                htmlRoot.classList.add('dark');
+            } else if (theme === 'system') {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    htmlRoot.classList.remove('light');
+                    htmlRoot.classList.add('dark');
+                }
+            }
+        })();
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+    <!-- Sidebar Navigation -->
+    <nav class="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col fixed overflow-y-auto">
+        <!-- Brand Header -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+                <div id="header-logo" class="app-logo-container w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden">
+                    {% if config.app_icon_url %}
+                    <img src="{{ config.app_icon_url }}" alt="Logo" class="app-logo w-full h-full object-cover" onerror="this.parentElement.innerHTML='L'; this.parentElement.classList.add('flex','items-center','justify-center'); this.parentElement.classList.remove('overflow-hidden');">
+                    {% else %}L{% endif %}
+                </div>
+                <div>
+                    <h1 class="font-bold text-indigo-600 text-lg">LabSend</h1>
+                    <p class="text-xs text-gray-500">Print Transfer System</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Name Badge -->
+        <div class="px-4 py-3 bg-indigo-50 border-b border-gray-200">
+            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Lab Context</p>
+            <p class="font-semibold text-sm text-indigo-600 mt-1">{{ lab_name }}</p>
+        </div>
+
+        <!-- Navigation Items -->
+        <div class="flex-1 py-4 overflow-y-auto">
+            <button onclick="showSection('dashboard')" id="nav-dashboard" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 bg-indigo-100 text-indigo-700 rounded-lg font-semibold transition-all text-left">
+                <span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </button>
+            <button onclick="showSection('queue')" id="nav-queue" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
+                <span class="material-symbols-outlined">cloud_upload</span>
+                Upload
+            </button>
+            <button onclick="showSection('qr-view')" id="nav-qr" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
+                <span class="material-symbols-outlined">qr_code</span>
+                QR Display
+            </button>
+            <button onclick="showSection('settings')" id="nav-settings" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
+                <span class="material-symbols-outlined">settings</span>
+                Settings
+            </button>
+        </div>
+
+        <!-- System Info -->
+        <div class="p-4 bg-gray-50 border-t border-gray-200">
+            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Server Status</p>
+            <div class="space-y-1 text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-gray-500">Online</span>
+                </div>
+                <div class="text-gray-500 font-mono">
+                    IP: {{ local_ip }}:{{ config.server_port }}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 flex flex-col">
+        <!-- Top Header -->
+        <header class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-bold text-gray-900" id="page-title">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="datetime" class="text-sm text-gray-500"></span>
+                <button onclick="location.reload()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Refresh">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="p-6 flex-1" id="content-area">
+
+            <!-- Dashboard Section -->
+            <div id="section-dashboard" class="space-y-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Queue Active</p>
+                                <p class="text-3xl font-bold text-indigo-600 mt-1" id="stat-queue">{{ stats.queue_count }}</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-xl text-indigo-600">queue</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Total Size</p>
+                                <p class="text-3xl font-bold text-green-600 mt-1" id="stat-size">{{ (stats.total_size / 1024 / 1024) | round(1) }} MB</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-xl text-green-600">cloud_done</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">Jobs Today</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-1" id="stat-today">{{ jobs | length }}</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-xl text-gray-500">today</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase">QR Token</p>
+                                <p class="text-lg font-bold font-mono text-indigo-600 mt-1" id="stat-token">{{ qr_data.token }}</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-xl text-indigo-600">qr_code_2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <h3 class="font-semibold text-lg mb-4">Quick Actions</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="/qr" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            <span class="material-symbols-outlined">qr_code</span>
+                            Fullscreen QR
+                        </a>
+                        <a href="/settings" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined">settings</span>
+                            Settings
+                        </a>
+                        <button onclick="regenerateQR()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined">refresh</span>
+                            Regenerate QR
+                        </button>
+                        <button onclick="openUploadFolder()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined">folder_open</span>
+                            Open Folder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Queue Table -->
+                {% if jobs %}
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="font-semibold text-lg">Recent Queue</h3>
+                        <button onclick="showSection('queue')" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Lihat Semua →</button>
+                    </div>
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th class="px-4 py-3">Mahasiswa</th>
+                                <th class="px-4 py-3">NIM</th>
+                                <th class="px-4 py-3">Files</th>
+                                <th class="px-4 py-3">Size</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Waktu</th>
+                                <th class="px-4 py-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs[:5] %}
+                            <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" onclick="toggleJobDetails('{{ job.id }}')">
+                                <td class="px-4 py-3">
+                                    <div class="font-semibold text-indigo-600">{{ job.student_name }}</div>
+                                </td>
+                                <td class="px-4 py-3 font-mono text-sm text-gray-500">{{ job.student_nim }}</td>
+                                <td class="px-4 py-3 text-sm font-medium">{{ job.total_files }}</td>
+                                <td class="px-4 py-3 text-sm">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                        {% if job.status == 'uploaded' %}bg-green-100 text-green-700
+                                        {% elif job.status == 'printed' %}bg-indigo-100 text-indigo-700
+                                        {% elif job.status == 'rejected' %}bg-red-100 text-red-700
+                                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                        {{ job.status }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ job.created_at.replace('T', ' ')[:19] }}</td>
+                                <td class="px-4 py-3" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-1.5 hover:bg-indigo-100 rounded text-gray-500 hover:text-indigo-600" title="View">
+                                            <span class="material-symbols-outlined text-base">visibility</span>
+                                        </button>
+                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-1.5 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Folder">
+                                            <span class="material-symbols-outlined text-base">folder</span>
+                                        </button>
+                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-1.5 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Printed">
+                                            <span class="material-symbols-outlined text-base">check_circle</span>
+                                        </button>
+                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-1.5 hover:bg-red-100 rounded text-gray-500 hover:text-red-600" title="Hapus">
+                                            <span class="material-symbols-outlined text-base">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% if job.files %}
+                            <tr id="details-row-{{ job.id }}" class="hidden">
+                                <td colspan="7" class="p-0 bg-indigo-50">
+                                    {% for file in job.files %}
+                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-3 px-4 py-2 border-t border-gray-200 hover:bg-indigo-100 transition-all">
+                                        <span class="material-symbols-outlined text-base text-indigo-600">description</span>
+                                        <span class="flex-1 text-sm text-gray-800 truncate">{{ file.original_name }}</span>
+                                        <span class="text-xs text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
+                                        <span class="material-symbols-outlined text-sm text-green-600">open_in_new</span>
+                                    </a>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Queue Section -->
+            <div id="section-queue" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-lg">Upload</h3>
+                    <div class="flex gap-2">
+                        <button onclick="filterJobs('all')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-100 text-indigo-700" id="filter-all">All</button>
+                        <button onclick="filterJobs('uploaded')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-uploaded">Uploaded</button>
+                        <button onclick="filterJobs('printed')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-printed">Printed</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase">
+                                <th class="px-4 py-3">Mahasiswa</th>
+                                <th class="px-4 py-3">NIM</th>
+                                <th class="px-4 py-3">Files</th>
+                                <th class="px-4 py-3">Size</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Waktu</th>
+                                <th class="px-4 py-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobs-table-body">
+                            {% for job in jobs %}
+                            <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" data-status="{{ job.status }}" data-job-id="{{ job.id }}" onclick="toggleJobDetails('{{ job.id }}')" id="job-row-{{ job.id }}">
+                                <td class="px-4 py-3">
+                                    <div class="font-semibold text-indigo-600">{{ job.student_name }}</div>
+                                </td>
+                                <td class="px-4 py-3 font-mono text-sm text-gray-500">{{ job.student_nim }}</td>
+                                <td class="px-4 py-3 text-sm font-medium">{{ job.total_files }} file</td>
+                                <td class="px-4 py-3 text-sm">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                        {% if job.status == 'uploaded' %}bg-green-100 text-green-700
+                                        {% elif job.status == 'printed' %}bg-indigo-100 text-indigo-700
+                                        {% elif job.status == 'rejected' %}bg-red-100 text-red-700
+                                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                        {{ job.status }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ job.created_at.replace('T', ' ')[:19] }}</td>
+                                <td class="px-4 py-3" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-1">
+                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-2 hover:bg-indigo-100 rounded-lg text-gray-500 hover:text-indigo-600 transition-colors" title="View File">
+                                            <span class="material-symbols-outlined text-lg">visibility</span>
+                                        </button>
+                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-2 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Open Folder">
+                                            <span class="material-symbols-outlined text-lg">folder</span>
+                                        </button>
+                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-2 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Mark Printed">
+                                            <span class="material-symbols-outlined text-lg">check_circle</span>
+                                        </button>
+                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-2 hover:bg-red-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors" title="Hapus Record">
+                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% if job.files %}
+                            <!-- Hidden details row -->
+                            <tr id="details-row-{{ job.id }}" class="hidden">
+                                <td colspan="7" class="p-0 bg-indigo-50">
+                                    {% for file in job.files %}
+                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-3 px-4 py-2 border-t border-gray-200 hover:bg-indigo-100 transition-all">
+                                        <span class="material-symbols-outlined text-base text-indigo-600">description</span>
+                                        <span class="flex-1 text-sm text-gray-800 truncate">{{ file.original_name }}</span>
+                                        <span class="text-xs text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
+                                        <span class="material-symbols-outlined text-sm text-green-600">open_in_new</span>
+                                    </a>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not jobs %}
+                    <div class="p-8 text-center text-gray-500">
+                        <span class="material-symbols-outlined text-4xl">inbox</span>
+                        <p class="mt-2">Belum ada upload masuk</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- QR View Section -->
+            <div id="section-qr-view" class="hidden">
+                <div class="max-w-md mx-auto bg-white rounded-xl p-8 border border-gray-200 shadow-lg text-center">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Scan untuk Upload</h2>
+                    <p class="text-sm text-gray-500 mb-6">{{ server_url }}/u/{{ qr_data.token }}</p>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 inline-block shadow-sm">
+                        <img src="{{ qr_data.qr_image }}" alt="QR Code" class="w-64 h-64 mx-auto">
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <p class="text-sm text-gray-500">Token aktif selama <span id="qr-timer" class="font-bold text-indigo-600">{{ qr_data.expires_in }}</span> detik</p>
+                        <button onclick="regenerateQR()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold">
+                            Regenerate QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="section-settings" class="hidden">
+                <div class="max-w-3xl space-y-6">
+
+                    <!-- Server Settings Card -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">dns</span>
+                            Server Configuration
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Nama Lab</label>
+                                <input type="text" id="setting-lab-name" value="{{ config.lab_name }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Server Host</label>
+                                <input type="text" id="setting-host" value="{{ config.server_host }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Server Port</label>
+                                <input type="number" id="setting-port" value="{{ config.server_port }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500" readonly>
+                                <p class="text-xs text-gray-400 mt-1">* Restart untuk ubah port</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Public Base URL</label>
+                                <input type="text" id="setting-public-url" value="{{ config.public_base_url or '' }}" placeholder="https://domain.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                                <p class="text-xs text-gray-400 mt-1">* Untuk Cloudflare Tunnel</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5">URL Icon / Favicon</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="setting-app-icon" value="{{ config.app_icon_url or '' }}" placeholder="https://example.com/icon.png" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                                <button onclick="previewIcon()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Preview">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                                <button onclick="clearIcon()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Clear">
+                                    <span class="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">PNG, JPG, WEBP, ICO. Preview akan mengubah favicon browser.</p>
+                            <div id="icon-preview" class="mt-2 flex items-center gap-3 {% if not config.app_icon_url %}hidden{% endif %}">
+                                <img id="icon-preview-img" src="{{ config.app_icon_url or '' }}" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-gray-300" onerror="this.style.display='none'">
+                                <span class="text-xs text-green-600 font-medium">Icon aktif</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Settings Card -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">folder</span>
+                            Upload Settings
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Lokasi Folder</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="setting-folder" value="{{ config.upload_folder }}" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                                    <button onclick="openUploadFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm">Open</button>
+                                    <button onclick="testFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm">Test</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Size/File (MB)</label>
+                                    <input type="number" id="setting-max-size" value="{{ config.max_file_size_mb }}" min="1" max="500" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Total (MB)</label>
+                                    <input type="number" id="setting-max-total" value="{{ config.max_total_upload_mb }}" min="1" max="1000" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Files/Session</label>
+                                    <input type="number" id="setting-max-files" value="{{ config.max_files_per_session }}" min="1" max="50" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Extensions Card -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">rule</span>
+                            File Extensions
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Ekstensi Diperbolehkan</label>
+                                <input type="text" id="setting-allowed-ext" value="{{ config.allowed_extensions | join(', ') }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                                <p class="text-xs text-gray-400 mt-1">Pisahkan dengan koma: pdf, docx, png, jpg</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Ekstensi Diblokir</label>
+                                <input type="text" id="setting-blocked-ext" value="{{ config.blocked_extensions | join(', ') }}" class="w-full bg-gray-100 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500" readonly>
+                                <p class="text-xs text-red-500 mt-1">* Executable & script selalu diblokir</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Card -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">security</span>
+                            Keamanan
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Firewall Status -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium">Firewall Status</span>
+                                    {% if firewall_exists %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                        <span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                                        Active
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                                        <span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span>
+                                        Not Configured
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs text-gray-500">Buka port agar HP mahasiswa bisa mengakses upload.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="setupFirewall()" class="flex-1 bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-base">add_circle</span>
+                                    Setup Firewall
+                                </button>
+                                <button onclick="checkFirewall()" class="flex-1 bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                    Check Status
+                                </button>
+                            </div>
+
+                            <!-- Auto Cleanup -->
+                            <div class="border-t border-gray-200 pt-4 mt-4">
+                                <h4 class="text-sm font-semibold mb-3">Auto Cleanup</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" id="setting-auto-delete" {% if config.auto_delete_enabled %}checked{% endif %} class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">Aktifkan Auto Delete</span>
+                                    </label>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Hapus Setelah (Jam)</label>
+                                        <input type="number" id="setting-auto-delete-hours" value="{{ config.auto_delete_after_hours }}" min="1" max="168" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+                                <button onclick="runCleanup()" class="mt-3 w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-base">delete_sweep</span>
+                                    Jalankan Cleanup Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Card -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">palette</span>
+                            Sistem
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Theme</label>
+                                <select id="setting-theme" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                                    <option value="light" {% if config.theme == 'light' %}selected{% endif %}>Light Mode</option>
+                                    <option value="dark" {% if config.theme == 'dark' %}selected{% endif %}>Dark Mode</option>
+                                    <option value="system" {% if config.theme == 'system' %}selected{% endif %}>System Default</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <div class="bg-gray-50 rounded-lg p-3 w-full">
+                                    <p class="text-xs text-gray-500">Storage Stats</p>
+                                    <p class="text-sm font-semibold text-gray-700">{{ config.lab_name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <button onclick="saveSettings()" class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center gap-2">
+                        <span class="material-symbols-outlined">save</span>
+                        Save All Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-lg hidden z-50"></div>
+
+    <!-- Powered By Footer -->
+    <footer class="bg-white border-t border-gray-200 py-3 px-6 text-center">
+        <p class="text-[11px] text-gray-500">
+            Powered by <span class="font-semibold text-gray-700">Laboratorium FST UINSA</span> & <span class="font-semibold text-gray-700">SINF UINSA</span>
+            <span class="mx-1">•</span>
+            Copyright by <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a> 2026
+        </p>
+    </footer>
+
+    <script>
+        // Update datetime
+        function updateDateTime() {
+            var now = new Date();
+            document.getElementById('datetime').textContent = now.toLocaleString('id-ID');
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Restore section and expanded jobs from sessionStorage on page load
+        var savedSection = sessionStorage.getItem('labsend_active_section') || 'dashboard';
+        var savedExpandedJob = sessionStorage.getItem('labsend_expanded_job');
+
+        // Restore expanded job
+        if (savedExpandedJob) {
+            setTimeout(function() {
+                toggleJobDetails(savedExpandedJob);
+            }, 100);
+        }
+
+        showSection(savedSection);
+
+        // Show/hide sections
+        function showSection(section) {
+            sessionStorage.setItem('labsend_active_section', section);
+
+            var sections = ['dashboard', 'queue', 'qr-view', 'settings'];
+            var navs = ['dashboard', 'queue', 'qr', 'settings'];
+
+            sections.forEach(function(s) {
+                var el = document.getElementById('section-' + s);
+                if (el) el.classList.add('hidden');
+            });
+
+            navs.forEach(function(n) {
+                var btn = document.getElementById('nav-' + n);
+                if (btn) {
+                    btn.className = btn.className.replace('bg-indigo-100', 'bg-gray-100').replace('text-indigo-700', 'text-gray-500');
+                }
+            });
+
+            document.getElementById('section-' + section).classList.remove('hidden');
+            var navBtn = document.getElementById('nav-' + (section === 'qr-view' ? 'qr' : section));
+            if (navBtn) {
+                navBtn.className = navBtn.className.replace('bg-gray-100', 'bg-indigo-100').replace('text-gray-500', 'text-indigo-700');
+            }
+
+            var titles = {
+                'dashboard': 'Dashboard',
+                'queue': 'Queue',
+                'qr-view': 'QR Display',
+                'settings': 'Settings'
+            };
+            document.getElementById('page-title').textContent = titles[section] || section;
+        }
+
+        // Toast notification
+        function showToast(message, duration) {
+            duration = duration || 2500;
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            toast.style.opacity = '1';
+            setTimeout(function() {
+                toast.style.opacity = '0';
+                setTimeout(function() { toast.classList.add('hidden'); }, 300);
+            }, duration);
+        }
+
+        // Regenerate QR
+        async function regenerateQR() {
+            try {
+                var res = await fetch('/api/qr/regenerate', { method: 'POST' });
+                var data = await res.json();
+                showToast('QR Code regenerated');
+                setTimeout(function() { location.reload(); }, 500);
+            } catch (e) {
+                showToast('Error regenerating QR');
+            }
+        }
+
+        // Filter jobs
+        function filterJobs(status) {
+            var rows = document.querySelectorAll('#jobs-table-body tr');
+            rows.forEach(function(row) {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            ['all', 'uploaded', 'printed'].forEach(function(s) {
+                var btn = document.getElementById('filter-' + s);
+                if (btn) {
+                    btn.className = btn.className.replace('bg-indigo-100', 'bg-gray-100').replace('text-indigo-700', 'text-gray-700');
+                }
+            });
+            var activeBtn = document.getElementById('filter-' + status);
+            if (activeBtn) {
+                activeBtn.className = activeBtn.className.replace('bg-gray-100', 'bg-indigo-100').replace('text-gray-700', 'text-indigo-700');
+            }
+        }
+
+        // View file
+        function viewFile(fileId) {
+            if (fileId) {
+                window.open('/files/' + fileId + '/view', '_blank');
+            } else {
+                showToast('No file to view');
+            }
+        }
+
+        // Open job folder
+        async function openJobFolder(jobId) {
+            try {
+                var res = await fetch('/api/jobs/' + jobId + '/open-folder', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message);
+            } catch (e) {
+                showToast('Error opening folder');
+            }
+        }
+
+        // Toggle job details dropdown
+        function toggleJobDetails(jobId) {
+            var detailsRow = document.getElementById('details-row-' + jobId);
+            var currentExpanded = sessionStorage.getItem('labsend_expanded_job');
+
+            if (detailsRow) {
+                if (detailsRow.classList.contains('hidden')) {
+                    // Hide all other details rows
+                    document.querySelectorAll('[id^="details-row-"]').forEach(function(row) {
+                        row.classList.add('hidden');
+                    });
+                    // Show this one
+                    detailsRow.classList.remove('hidden');
+                    // Save to sessionStorage
+                    sessionStorage.setItem('labsend_expanded_job', jobId);
+                } else {
+                    detailsRow.classList.add('hidden');
+                    // Clear from sessionStorage
+                    sessionStorage.removeItem('labsend_expanded_job');
+                }
+            }
+        }
+
+        // Auto-refresh jobs every 10 seconds - only refresh if not expanded
+        function refreshJobs() {
+            var currentExpanded = sessionStorage.getItem('labsend_expanded_job');
+
+            fetch('/api/jobs')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.jobs && data.jobs.length > 0) {
+                        // Only reload if no row is expanded
+                        if (!currentExpanded) {
+                            location.reload();
+                        }
+                    }
+                })
+                .catch(function(e) {
+                    console.log('Auto-refresh check failed');
+                });
+        }
+
+        // Check for new jobs every 10 seconds
+        setInterval(refreshJobs, 10000);
+
+        // Mark job printed
+        async function markJobPrinted(jobId, btnElement) {
+            try {
+                var res = await fetch('/api/jobs/' + jobId + '/print', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message);
+
+                // Change button to green (done)
+                if (btnElement) {
+                    btnElement.classList.remove('text-gray-500', 'hover:text-green-600', 'hover:bg-green-100');
+                    btnElement.classList.add('text-green-600', 'bg-green-100');
+                    btnElement.onclick = null;
+                }
+            } catch (e) {
+                showToast('Error marking printed');
+            }
+        }
+
+        // Delete job record
+        async function rejectJob(jobId, btnElement) {
+            if (!confirm('Yakin ingin hapus record ini? File juga akan dihapus.')) return;
+            try {
+                var res = await fetch('/api/jobs/' + jobId + '/reject', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message);
+
+                // Fade out and remove the row
+                var row = btnElement ? btnElement.closest('tr') : null;
+                if (row) {
+                    row.style.transition = 'opacity 0.5s';
+                    row.style.opacity = '0';
+                    setTimeout(function() {
+                        row.remove();
+                    }, 500);
+                }
+            } catch (e) {
+                showToast('Error deleting job');
+            }
+        }
+
+        // Open upload folder
+        async function openUploadFolder() {
+            try {
+                var res = await fetch('/api/settings/open-folder', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message);
+            } catch (e) {
+                showToast('Error opening folder');
+            }
+        }
+
+        // Test folder
+        async function testFolder() {
+            var folder = document.getElementById('setting-folder').value;
+            try {
+                var formData = new FormData();
+                formData.append('folder', folder);
+                var res = await fetch('/api/settings/test-folder', { method: 'POST', body: formData });
+                var data = await res.json();
+                showToast(data.message, 4000);
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Setup firewall
+        async function setupFirewall() {
+            try {
+                var res = await fetch('/api/settings/setup-firewall', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message, 5000);
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Check firewall
+        async function checkFirewall() {
+            try {
+                var res = await fetch('/api/settings/setup-firewall', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message, 5000);
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Run cleanup
+        async function runCleanup() {
+            try {
+                var res = await fetch('/api/settings/cleanup', { method: 'POST' });
+                var data = await res.json();
+                showToast(data.message, 5000);
+                // Reload page after cleanup to show updated jobs list
+                setTimeout(function() { location.reload(); }, 2000);
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Preview icon
+        function previewIcon() {
+            var iconUrl = document.getElementById('setting-app-icon').value;
+            var previewDiv = document.getElementById('icon-preview');
+            var previewImg = document.getElementById('icon-preview-img');
+            var faviconLink = document.getElementById('favicon-link');
+
+            if (iconUrl) {
+                previewDiv.classList.remove('hidden');
+                previewImg.src = iconUrl;
+                previewImg.style.display = 'block';
+                faviconLink.href = iconUrl;
+                // Set appropriate type based on extension
+                if (iconUrl.endsWith('.ico')) {
+                    faviconLink.type = 'image/x-icon';
+                } else if (iconUrl.endsWith('.jpg') || iconUrl.endsWith('.jpeg')) {
+                    faviconLink.type = 'image/jpeg';
+                } else if (iconUrl.endsWith('.webp')) {
+                    faviconLink.type = 'image/webp';
+                } else {
+                    faviconLink.type = 'image/png';
+                }
+                // Update logo on page
+                updatePageLogos(iconUrl);
+            } else {
+                showToast('Masukkan URL icon terlebih dahulu');
+            }
+        }
+
+        // Update all logo images on the page
+        function updatePageLogos(iconUrl) {
+            var logos = document.querySelectorAll('.app-logo');
+            logos.forEach(function(logo) {
+                logo.src = iconUrl;
+                logo.style.display = 'block';
+            });
+        }
+
+        // Clear icon
+        function clearIcon() {
+            document.getElementById('setting-app-icon').value = '';
+            document.getElementById('icon-preview').classList.add('hidden');
+            document.getElementById('favicon-link').href = '';
+            // Reset logos to default "L"
+            var logoContainers = document.querySelectorAll('.app-logo-container');
+            logoContainers.forEach(function(container) {
+                container.innerHTML = 'L';
+                container.classList.add('flex', 'items-center', 'justify-center');
+            });
+        }
+
+        // Save settings
+        async function saveSettings() {
+            var settings = {
+                lab_name: document.getElementById('setting-lab-name').value,
+                server_host: document.getElementById('setting-host').value,
+                server_port: parseInt(document.getElementById('setting-port').value),
+                public_base_url: document.getElementById('setting-public-url').value || null,
+                app_icon_url: document.getElementById('setting-app-icon').value || null,
+                upload_folder: document.getElementById('setting-folder').value,
+                max_file_size_mb: parseInt(document.getElementById('setting-max-size').value),
+                max_total_upload_mb: parseInt(document.getElementById('setting-max-total').value),
+                max_files_per_session: parseInt(document.getElementById('setting-max-files').value),
+                allowed_extensions: document.getElementById('setting-allowed-ext').value.split(',').map(function(e) { return e.trim(); }).filter(function(e) { return e; }),
+                blocked_extensions: document.getElementById('setting-blocked-ext').value.split(',').map(function(e) { return e.trim(); }).filter(function(e) { return e; }),
+                auto_delete_enabled: document.getElementById('setting-auto-delete').checked,
+                auto_delete_after_hours: parseInt(document.getElementById('setting-auto-delete-hours').value),
+                theme: document.getElementById('setting-theme').value
+            };
+
+            console.log('Saving settings:', settings);
+
+            try {
+                var res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                var data = await res.json();
+                console.log('Save response:', data);
+                if (res.ok) {
+                    showToast('Settings saved successfully!');
+                    // Update favicon and page logos after save
+                    var iconUrl = document.getElementById('setting-app-icon').value;
+                    var faviconLink = document.getElementById('favicon-link');
+                    if (iconUrl) {
+                        faviconLink.href = iconUrl;
+                        updatePageLogos(iconUrl);
+                    }
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error('Save error:', e);
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Update favicon on page load if icon is set
+        document.addEventListener('DOMContentLoaded', function() {
+            var iconUrl = document.getElementById('setting-app-icon').value;
+            var faviconLink = document.getElementById('favicon-link');
+            if (iconUrl) {
+                faviconLink.href = iconUrl;
+            }
+        });
+    </script>
+</body>
+</html>

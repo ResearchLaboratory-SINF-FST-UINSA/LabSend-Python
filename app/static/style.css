@@ -1,0 +1,300 @@
+/**
+ * LabSend Print Transfer - Custom Styles
+ * Scientific Precision Design System
+ */
+
+/* ============================================
+   CSS Variables - Design Tokens
+   ============================================ */
+
+:root {
+    /* Primary */
+    --color-primary: #4648d4;
+    --color-primary-container: #6063ee;
+    --color-on-primary: #ffffff;
+    --color-on-primary-container: #fffbff;
+
+    /* Secondary */
+    --color-secondary: #006c49;
+    --color-secondary-container: #6cf8bb;
+    --color-on-secondary: #ffffff;
+    --color-on-secondary-container: #00714d;
+
+    /* Tertiary */
+    --color-tertiary: #6b38d4;
+    --color-tertiary-container: #8455ef;
+    --color-on-tertiary: #ffffff;
+    --color-on-tertiary-container: #fffbff;
+
+    /* Error */
+    --color-error: #ba1a1a;
+    --color-error-container: #ffdad6;
+    --color-on-error: #ffffff;
+    --color-on-error-container: #93000a;
+
+    /* Surface */
+    --color-background: #f8f9ff;
+    --color-surface: #f8f9ff;
+    --color-surface-bright: #f8f9ff;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #eff4ff;
+    --color-surface-container: #e5eeff;
+    --color-surface-container-high: #dce9ff;
+    --color-surface-container-highest: #d3e4fe;
+    --color-surface-variant: #d3e4fe;
+    --color-surface-dim: #cbdbf5;
+
+    /* On Surface */
+    --color-on-background: #0b1c30;
+    --color-on-surface: #0b1c30;
+    --color-on-surface-variant: #464554;
+
+    /* Inverse */
+    --color-inverse-surface: #213145;
+    --color-inverse-on-surface: #eaf1ff;
+    --color-inverse-primary: #c0c1ff;
+
+    /* Outline */
+    --color-outline: #767586;
+    --color-outline-variant: #c7c4d7;
+
+    /* Spacing */
+    --space-gutter: 24px;
+    --space-stack-md: 16px;
+    --space-stack-lg: 24px;
+    --space-stack-sm: 8px;
+    --space-base: 8px;
+
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-ambient: 0px 4px 8px rgba(15, 23, 42, 0.04);
+    --shadow-elevated: 0px 8px 16px rgba(15, 23, 42, 0.08);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 400ms ease;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    line-height: 1.5;
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+.font-headline {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-code {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.shadow-ambient {
+    box-shadow: var(--shadow-ambient);
+}
+
+.shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+    animation: fadeIn var(--transition-normal);
+}
+
+.animate-slide-up {
+    animation: slideUp var(--transition-normal);
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   Component Styles
+   ============================================ */
+
+/* Cards */
+.card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-ambient);
+    padding: var(--space-stack-lg);
+}
+
+.card-elevated {
+    box-shadow: var(--shadow-elevated);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-base);
+    padding: 0.625rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-container);
+}
+
+.btn-secondary {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    border: 1px solid var(--color-outline-variant);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-surface-variant);
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    border-radius: var(--radius-full);
+}
+
+/* Inputs */
+.input {
+    width: 100%;
+    padding: 0.625rem;
+    background-color: var(--color-surface-container-low);
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(70, 72, 212, 0.2);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+}
+
+.badge-primary {
+    background-color: rgba(70, 72, 212, 0.1);
+    color: var(--color-primary);
+}
+
+.badge-success {
+    background-color: rgba(0, 108, 73, 0.1);
+    color: var(--color-secondary);
+}
+
+.badge-error {
+    background-color: rgba(186, 26, 26, 0.1);
+    color: var(--color-error);
+}
+
+/* ============================================
+   Responsive Utilities
+   ============================================ */
+
+@media (max-width: 768px) {
+    :root {
+        --space-gutter: 16px;
+    }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
