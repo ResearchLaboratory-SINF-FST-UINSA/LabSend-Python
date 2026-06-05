@@ -600,8 +600,12 @@
                                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">Lokasi Folder</label>
                                 <div class="flex gap-2">
                                     <input type="text" id="setting-folder" value="{{ config.upload_folder }}" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                                    <button onclick="openUploadFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm">Open</button>
-                                    <button onclick="testFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm">Test</button>
+                                    <button onclick="browseFolder()" class="px-4 py-2 bg-indigo-100 border border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium flex items-center gap-1" title="Browse">
+                                        <span class="material-symbols-outlined text-base">folder_open</span>
+                                        Browse
+                                    </button>
+                                    <button onclick="openUploadFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Open Folder">Open</button>
+                                    <button onclick="testFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Test">Test</button>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -739,7 +743,7 @@
         <p class="text-[11px] text-gray-500">
             Powered by <span class="font-semibold text-gray-700">Laboratorium FST UINSA</span> & <span class="font-semibold text-gray-700">SINF UINSA</span>
             <span class="mx-1">•</span>
-            Copyright by <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a> 2026
+            © 2026 <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a>. All rights reserved.
         </p>
     </footer>
 
@@ -1194,6 +1198,17 @@
             } catch (e) {
                 showToast('Error: ' + e.message);
             }
+        }
+
+        // Browse folder - open folder picker page
+        function browseFolder() {
+            window.open('/api/settings/folder-picker', 'folderPicker', 'width=600,height=500,resizable=yes,scrollbars=yes');
+        }
+
+        // Update upload folder from folder picker
+        function updateUploadFolder(folder) {
+            document.getElementById('setting-folder').value = folder;
+            showToast('Folder diubah ke: ' + folder);
         }
 
         // Setup firewall

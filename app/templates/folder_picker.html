@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="html-root">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Browse Folder - LabSend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="material-symbols-outlined text-3xl text-indigo-600">folder_open</span>
+            <h1 class="text-xl font-bold text-gray-900">Pilih Folder Penyimpanan</h1>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-4">
+            Pilih folder di drive lain (D:, E:, dll) untuk menyimpan file upload.
+        </p>
+
+        <!-- Current Folder -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Folder Saat Ini</label>
+            <div class="bg-gray-100 rounded-lg p-3 text-sm font-mono text-gray-700">
+                {{ current_folder }}
+            </div>
+        </div>
+
+        <!-- Drive Selection -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Pilih Drive</label>
+            <div id="drives-list" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div class="text-center text-gray-500 text-xs py-4">Memuat daftar drive...</div>
+            </div>
+        </div>
+
+        <!-- Manual Path Input -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Atau masukkan path manual</label>
+            <div class="flex gap-2">
+                <input type="text" id="manual-path" placeholder="Contoh: D:\UploadFiles" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
+                <button onclick="testManualPath()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                    Test
+                </button>
+            </div>
+        </div>
+
+        <!-- Selected Path Preview -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Folder yang Dipilih</label>
+            <div id="selected-preview" class="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm font-mono text-indigo-700">
+                Belum ada folder dipilih
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button onclick="selectFolder()" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">check</span>
+                Pilih Folder Ini
+            </button>
+            <button onclick="openWindowsDialog()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2">
+                <span class="material-symbols-outlined text-base">folder</span>
+                Browse...
+            </button>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-4 text-center">
+            Gunakan tombol "Browse..." untuk memilih folder menggunakan File Explorer
+        </p>
+    </div>
+
+    <!-- Hidden iframe for Windows dialog -->
+    <iframe id="dialog-frame" style="display:none;"></iframe>
+
+    <script>
+        var selectedPath = "";
+
+        // Load drives on page load
+        async function loadDrives() {
+            try {
+                var res = await fetch('/api/settings/get-drives');
+                var data = await res.json();
+
+                var drivesList = document.getElementById('drives-list');
+                drivesList.innerHTML = '';
+
+                if (data.drives && data.drives.length > 0) {
+                    data.drives.forEach(function(drive) {
+                        var div = document.createElement('div');
+                        div.className = 'border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all text-center';
+                        div.onclick = function() { selectDrive(drive.letter); };
+                        div.innerHTML = '<div class="text-2xl mb-1">💾</div>' +
+                            '<div class="font-bold text-gray-800">' + drive.letter + '</div>' +
+                            '<div class="text-xs text-gray-500">' + drive.free_mb.toLocaleString() + ' MB free</div>';
+                        drivesList.appendChild(div);
+                    });
+                } else {
+                    drivesList.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Tidak ada drive ditemukan</div>';
+                }
+            } catch (e) {
+                document.getElementById('drives-list').innerHTML =
+                    '<div class="col-span-4 text-center text-red-500 py-4">Error memuat drive: ' + e.message + '</div>';
+            }
+        }
+
+        // Select a drive and show folder input
+        function selectDrive(letter) {
+            document.getElementById('manual-path').value = letter + '\\';
+            selectedPath = letter + '\\';
+            updatePreview();
+        }
+
+        // Test manual path
+        function testManualPath() {
+            var path = document.getElementById('manual-path').value.trim();
+            if (!path) {
+                showToast('Masukkan path terlebih dahulu');
+                return;
+            }
+
+            fetch('/api/settings/set-folder', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'folder=' + encodeURIComponent(path)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('Folder valid dan bisa ditulis!');
+                    selectedPath = data.folder;
+                    updatePreview();
+                } else {
+                    showToast(data.message);
+                }
+            })
+            .catch(function(e) {
+                showToast('Error: ' + e.message);
+            });
+        }
+
+        // Update preview
+        function updatePreview() {
+            var preview = document.getElementById('selected-preview');
+            if (selectedPath) {
+                preview.textContent = selectedPath;
+                preview.className = 'bg-green-50 border border-green-200 rounded-lg p-3 text-sm font-mono text-green-700';
+            } else {
+                preview.textContent = 'Belum ada folder dipilih';
+                preview.className = 'bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-sm font-mono text-indigo-700';
+            }
+        }
+
+        // Select folder (save to settings)
+        function selectFolder() {
+            var folder = selectedPath || document.getElementById('manual-path').value.trim();
+
+            if (!folder) {
+                showToast('Pilih folder terlebih dahulu');
+                return;
+            }
+
+            // Save to server settings
+            fetch('/api/settings', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({upload_folder: folder})
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    // Notify parent window and close
+                    if (window.opener) {
+                        window.opener.postMessage({type: 'folderSelected', folder: folder}, '*');
+                        var parentInput = window.opener.document.getElementById('setting-folder');
+                        if (parentInput) {
+                            parentInput.value = folder;
+                        }
+                    }
+                    showToast('Folder berhasil disimpan!', 2000);
+                    setTimeout(function() { window.close(); }, 1000);
+                } else {
+                    showToast(data.message || 'Gagal menyimpan folder');
+                }
+            })
+            .catch(function(e) {
+                showToast('Error: ' + e.message);
+            });
+        }
+
+        // Open Windows native folder dialog
+        async function openWindowsDialog() {
+            try {
+                var res = await fetch('/api/settings/open-folder-dialog', { method: 'POST' });
+                var data = await res.json();
+
+                if (data.success && data.path) {
+                    selectedPath = data.path;
+                    document.getElementById('manual-path').value = data.path;
+                    updatePreview();
+                    showToast('Folder dipilih: ' + data.path, 3000);
+                } else if (data.message === "Dibatalkan oleh user") {
+                    showToast('Pemilihan folder dibatalkan');
+                } else {
+                    showToast(data.message || 'Gagal membuka dialog');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Toast notification
+        function showToast(message, duration) {
+            duration = duration || 3000;
+            var toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium text-sm shadow-lg z-50';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(function() {
+                toast.classList.add('hidden');
+            }, duration);
+        }
+
+        // Manual path input change
+        document.getElementById('manual-path').addEventListener('input', function() {
+            selectedPath = this.value.trim();
+            updatePreview();
+        });
+
+        // Load drives on load
+        loadDrives();
+    </script>
+</body>
+</html>

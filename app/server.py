@@ -554,6 +554,164 @@ async def settings_page(request: Request):
     })
 
 
+@app.get("/api/settings/folder-picker", response_class=HTMLResponse)
+async def folder_picker_page(request: Request):
+    """Folder picker page using native Windows file dialog."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    # Get current folder from config
+    current_folder = get_config("upload_folder") or ""
+
+    return templates.TemplateResponse("folder_picker.html", {
+        "request": request,
+        "current_folder": current_folder
+    })
+
+
+@app.get("/api/settings/browse-folder")
+async def browse_folder_api(request: Request):
+    """Return HTML page that opens Windows folder picker dialog."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    return {"redirect": "/api/settings/folder-picker"}
+
+
+@app.get("/api/settings/get-drives")
+async def get_drives_api(request: Request):
+    """Get list of available drives on Windows."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['wmic', 'logicaldisk', 'get', 'name,volumeserialnumber,size,freespace', '/format:csv'],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            creationflags=0x08000000
+        )
+
+        drives = []
+        lines = result.stdout.strip().split('\n')
+        for line in lines[1:]:  # Skip header
+            parts = line.strip().split(',')
+            if len(parts) >= 5:
+                name = parts[1].strip() if len(parts) > 1 else ""
+                if name and len(name) == 2 and name[1] == ':':
+                    free_space = parts[3].strip() if len(parts) > 3 else "0"
+                    total_size = parts[4].strip() if len(parts) > 4 else "0"
+                    try:
+                        free_mb = int(free_space) // (1024 * 1024) if free_space.isdigit() else 0
+                        total_mb = int(total_size) // (1024 * 1024) if total_size.isdigit() else 0
+                        drives.append({
+                            "letter": name,
+                            "free_mb": free_mb,
+                            "total_mb": total_mb
+                        })
+                    except:
+                        drives.append({
+                            "letter": name,
+                            "free_mb": 0,
+                            "total_mb": 0
+                        })
+
+        return {"drives": drives}
+    except Exception as e:
+        return {"drives": [], "error": str(e)}
+
+
+@app.post("/api/settings/set-folder")
+async def set_folder_api(request: Request, folder: str = Form(...)):
+    """Set the upload folder path."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    try:
+        # Expand user path (~)
+        from pathlib import Path
+        folder_path = Path(folder).expanduser().resolve()
+
+        # Validate folder path
+        if not folder_path.anchor:
+            return {"success": False, "message": "Path tidak valid"}
+
+        # Check if folder exists, if not create it
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        # Test if writable
+        test_file = folder_path / ".write_test"
+        try:
+            test_file.touch()
+            test_file.unlink()
+        except Exception:
+            return {"success": False, "message": "Folder tidak bisa ditulis"}
+
+        return {
+            "success": True,
+            "message": f"Folder disimpan: {folder_path}",
+            "folder": str(folder_path)
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}
+
+
+@app.post("/api/settings/open-folder-dialog")
+async def open_folder_dialog_api(request: Request):
+    """Open Windows native folder browser dialog."""
+    if not is_localhost(request):
+        raise HTTPException(status_code=403, detail="Akses ditolak")
+
+    try:
+        import subprocess
+
+        # PowerShell script to open folder browser dialog
+        ps_script = '''
+Add-Type -AssemblyName System.Windows.Forms
+$folder = New-Object System.Windows.Forms.FolderBrowserDialog
+$folder.Description = "Pilih Folder untuk LabSend"
+$folder.ShowNewFolderButton = $true
+if ($folder.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+    Write-Output $folder.SelectedPath
+} else {
+    Write-Output "CANCELLED"
+}
+'''
+
+        result = subprocess.run(
+            ['powershell', '-Command', ps_script],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            creationflags=0x08000000
+        )
+
+        selected_path = result.stdout.strip()
+
+        if selected_path == "CANCELLED" or not selected_path:
+            return {"success": False, "message": "Dibatalkan oleh user", "path": None}
+        else:
+            # Validate and test the path
+            from pathlib import Path
+            folder_path = Path(selected_path)
+            folder_path.mkdir(parents=True, exist_ok=True)
+
+            # Test writable
+            test_file = folder_path / ".write_test"
+            test_file.touch()
+            test_file.unlink()
+
+            return {
+                "success": True,
+                "message": "Folder dipilih",
+                "path": str(folder_path)
+            }
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}", "path": None}
+
+
 @app.get("/api/settings")
 async def get_settings_api():
     """Get all settings."""
