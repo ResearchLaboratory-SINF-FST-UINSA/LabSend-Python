@@ -1,6 +1,31 @@
 # LabSend Print Transfer
 
-Aplikasi desktop Windows untuk transfer file dari HP mahasiswa ke komputer lab melalui QR Code. Dibuat dengan Python + FastAPI untuk kemudahan penggunaan di laboratorium komputer.
+Aplikasi transfer file untuk print via QR Code berbasis web. Dibuat dengan Python + FastAPI untuk kemudahan penggunaan di laboratorium komputer.
+
+## Cara Menjalankan (Tanpa EXE)
+
+### Metode 1: Double-Click (Paling Mudah)
+
+1. **Double-click file `run.bat`** di folder `labsend`
+2. Tunggu sampai server started
+3. Buka browser dan akses:
+   - **Dashboard**: http://localhost:4711/admin
+   - **QR Page**: http://localhost:4711/qr
+   - **Settings**: http://localhost:4711/settings
+
+### Metode 2: Via Python Langsung
+
+```bash
+cd labsend
+python run_web.py
+```
+
+### Metode 3: Via uvicorn
+
+```bash
+cd labsend
+uvicorn app.server:app --host 0.0.0.0 --port 4711 --reload
+```
 
 ## Fitur Utama
 
@@ -8,8 +33,8 @@ Aplikasi desktop Windows untuk transfer file dari HP mahasiswa ke komputer lab m
 - **Multi-file Upload** - Mendukung upload banyak file sekaligus
 - **Dashboard Operator** - Kelola file masuk dengan mudah
 - **Preview & Print** - Lihat dan print file dengan satu klik
-- **System Tray** - Aplikasi berjalan di background
 - **Auto-cleanup** - File lama dihapus otomatis
+- **Custom Storage** - Simpan di drive lain (D:\, E:\, dll)
 
 ## Requirements
 
@@ -18,44 +43,37 @@ Aplikasi desktop Windows untuk transfer file dari HP mahasiswa ke komputer lab m
 
 ## Instalasi
 
-### 1. Clone atau download project
+### 1. Persiapan - Install Python
+
+Download dan install Python dari https://www.python.org/downloads/
+Pastikan centang **"Add Python to PATH"** saat instalasi.
+
+### 2. Jalankan Aplikasi
 
 ```bash
 cd labsend
+double-click run.bat
 ```
 
-### 2. Buat virtual environment
+Atau via command line:
 
 ```bash
-python -m venv .venv
+cd labsend
+python run_web.py
 ```
 
-### 3. Aktifkan virtual environment
+### 3. Selesai!
 
-```bash
-.venv\Scripts\activate
-```
-
-### 4. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 5. Jalankan aplikasi
-
-```bash
-python app/main.py
-```
+Aplikasi akan berjalan dan bisa diakses di browser.
 
 ## Penggunaan
 
 ### Untuk Operator
 
-1. Jalankan `python app/main.py`
-2. Aplikasi akan tampil di system tray
-3. Buka dashboard di browser: `http://localhost:4711/admin`
-4. Tampilkan QR ke mahasiswa
+1. Jalankan `run.bat` atau `python run_web.py`
+2. Buka dashboard di browser: `http://localhost:4711/admin`
+3. Tampilkan QR ke mahasiswa
+4. Klik menu hamburger untuk lihat QR di layar penuh
 
 ### Untuk Mahasiswa
 
@@ -64,6 +82,20 @@ python app/main.py
 3. Pilih file yang ingin diprint
 4. Klik Upload
 5. Tunggu konfirmasi dari operator
+
+## Build EXE (Optional)
+
+Jika ingin membuat executable Windows:
+
+```bash
+cd labsend
+pip install pyinstaller
+
+# Build
+pyinstaller --clean --noconsole --onedir --icon ".\app\assets\tray.ico" ".\app\main.py"
+```
+
+File EXE akan ada di folder `dist/main/`.
 
 ## Struktur Project
 
@@ -172,8 +204,8 @@ Pastikan QR service berjalan. Cek logs untuk error.
 
 ## Lisensi
 
-MIT License
+© 2026 azizlab.my.id. All rights reserved.
 
 ## Author
 
-LabSend Team
+LabSend by azizlab.my.id
