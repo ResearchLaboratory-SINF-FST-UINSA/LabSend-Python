@@ -151,6 +151,21 @@
             <!-- Student Upload Card -->
             <div id="upload-card" class="bg-white rounded-xl border border-gray-200 shadow-sm max-w-md mx-auto w-full mt-6">
 
+                <!-- Login Status -->
+                <div id="login-status" class="p-6 border-b border-gray-200 hidden">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs uppercase tracking-widest font-semibold text-indigo-600">Login Access</p>
+                            <p id="login-status-text" class="text-sm text-gray-600 mt-1">Memuat status login...</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="login-button" onclick="location.href='/login?redirect=/u/{{ token }}'" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">Login</button>
+                            <button id="logout-button" onclick="logoutUser()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm hidden">Logout</button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3" id="login-help-text"></p>
+                </div>
+
                 <!-- Step 1: Identity Form -->
                 <div id="step-identity" class="p-6 space-y-5 block">
                     <div>
@@ -294,6 +309,7 @@
         var studentNim = '';
         var token = '{{ token }}';
         var isTokenValid = true;
+        var currentUser = null;
 
         // Upload limits from config
         var maxFileSize = parseInt('{{ config.max_file_size_mb or 50 }}') * 1024 * 1024;
@@ -301,6 +317,59 @@
         var maxFileCount = parseInt('{{ config.max_files_per_session or 10 }}');
 
         // Validate token on page load
+        async function loadCurrentUser() {
+            try {
+                var response = await fetch('/api/auth/me');
+                var data = await response.json();
+                if (response.ok && data.success && data.user) {
+                    currentUser = data.user;
+                    document.getElementById('login-status').classList.remove('hidden');
+                    document.getElementById('login-button').classList.add('hidden');
+                    document.getElementById('logout-button').classList.remove('hidden');
+                    document.getElementById('login-status-text').textContent = 'Masuk sebagai ' + currentUser.username + ' (' + currentUser.role + ')';
+
+                    if (currentUser.student_name && currentUser.student_nim) {
+                        document.getElementById('login-help-text').textContent = 'Akun ini akan digunakan untuk mengisi identitas upload secara otomatis. Anda tidak perlu memasukkan nama dan NIM lagi.';
+                    } else {
+                        document.getElementById('login-help-text').textContent = 'Silakan lengkapi profile akun Anda di halaman admin untuk menggunakan login tanpa mengisi identitas.';
+                    }
+                } else {
+                    document.getElementById('login-status').classList.remove('hidden');
+                    document.getElementById('login-status-text').textContent = 'Anda belum login.';
+                    document.getElementById('login-button').classList.remove('hidden');
+                    document.getElementById('logout-button').classList.add('hidden');
+                    document.getElementById('login-help-text').textContent = 'Anda tetap dapat upload sebagai tamu dengan memasukkan nama dan NIM.';
+                }
+            } catch (e) {
+                console.error('Auth check failed:', e);
+                document.getElementById('login-status').classList.remove('hidden');
+                document.getElementById('login-status-text').textContent = 'Tidak dapat memeriksa status login.';
+                document.getElementById('login-help-text').textContent = 'Silakan login jika ingin menggunakan profil upload.';
+            }
+        }
+
+        async function loadExistingJob() {
+            try {
+                var response = await fetch('/api/upload/' + token + '/job');
+                if (!response.ok) {
+                    return null;
+                }
+                var data = await response.json();
+                if (data.exists) {
+                    jobId = data.job_id;
+                    studentName = data.student_name || '';
+                    studentNim = data.student_nim || '';
+                    if (studentName && studentNim) {
+                        document.getElementById('input-name').value = studentName;
+                        document.getElementById('input-nim').value = studentNim;
+                        showStep('upload');
+                    }
+                }
+            } catch (e) {
+                console.error('Could not load existing job:', e);
+            }
+        }
+
         async function validateTokenOnLoad() {
             try {
                 var response = await fetch('/api/token/' + token + '/status');
@@ -319,19 +388,42 @@
                 document.getElementById('token-expired').classList.add('hidden');
                 document.getElementById('token-invalid').classList.add('hidden');
 
+                await loadCurrentUser();
+                await loadExistingJob();
+
+                if (currentUser && currentUser.student_name && currentUser.student_nim && !jobId) {
+                    document.getElementById('input-name').value = currentUser.student_name;
+                    document.getElementById('input-nim').value = currentUser.student_nim;
+                    studentName = currentUser.student_name;
+                    studentNim = currentUser.student_nim;
+                    await submitIdentity(true);
+                    showToast('Profil login terdeteksi. Langsung lanjut upload tanpa isi ulang.');
+                }
             } catch (e) {
                 console.error('Token validation error:', e);
                 // Continue anyway, let the form work
+                await loadCurrentUser();
             }
         }
 
         // Validate token on load
         validateTokenOnLoad();
 
+        function logoutUser() {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                body: new FormData()
+            }).finally(function() {
+                location.reload();
+            });
+        }
+
         // Submit Identity
-        async function submitIdentity() {
+        async function submitIdentity(auto = false) {
             if (!isTokenValid) {
-                showToast('Token sudah kadaluarsa. Silakan scan QR baru.');
+                if (!auto) {
+                    showToast('Token sudah kadaluarsa. Silakan scan QR baru.');
+                }
                 return;
             }
 
@@ -383,7 +475,9 @@
                         document.getElementById('upload-card').classList.add('hidden');
                         document.getElementById('token-expired').classList.remove('hidden');
                     }
-                    showToast(data.detail || 'Gagal validasi');
+                    if (!auto) {
+                        showToast(data.detail || 'Gagal validasi');
+                    }
                 }
             } catch (e) {
                 window.isSubmittingIdentity = false;

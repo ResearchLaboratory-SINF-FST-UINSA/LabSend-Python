@@ -35,7 +35,12 @@ def main():
     print("  LabSend Print Transfer - Web Version")
     print("=" * 60)
     print()
+    print("  Default login credentials:")
+    print("  • Username: admin")
+    print("  • Password: admin123")
+    print()
     print("  Jalankan di browser:")
+    print("  • Login:     http://localhost:4711/login")
     print("  • Dashboard: http://localhost:4711/admin")
     print("  • QR Page:   http://localhost:4711/qr")
     print("  • Settings:  http://localhost:4711/settings")
@@ -53,12 +58,18 @@ def main():
     from app.config import load_config, ensure_upload_folder
     from app.database import init_database, expire_old_qr_sessions
     from app.qr_service import create_new_qr_session
+    from app.auth_service import create_default_admin
     from app.server import app
 
     # Initialize
     print("[LabSend] Initializing...")
     load_config()
     init_database()
+
+    # Create default admin
+    create_default_admin()
+    print("[LabSend] Auth system ready")
+
     ensure_upload_folder()
     expire_old_qr_sessions()
 

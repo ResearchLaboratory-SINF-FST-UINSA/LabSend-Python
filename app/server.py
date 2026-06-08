@@ -7,11 +7,11 @@ import os
 import json
 import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 from datetime import datetime
 
-from fastapi import FastAPI, Request, HTTPException, Form, UploadFile, File, Depends
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse, JSONResponse
+from fastapi import FastAPI, Request, HTTPException, Form, UploadFile, File, Depends, Cookie
+from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
@@ -21,9 +21,9 @@ from .config import (
     get_server_url, BASE_DIR, BUNDLE_DIR
 )
 from .database import (
-    init_database, get_all_jobs, get_upload_job,
+    init_database, get_all_jobs, get_upload_job, get_user_upload_jobs,
     get_files_by_job, get_stats, update_job_status, update_file_status,
-    get_qr_session_by_token
+    get_qr_session_by_token, get_all_users, get_user_by_id
 )
 from .qr_service import (
     get_current_qr, regenerate_qr, mark_token_scanned, validate_token
@@ -43,6 +43,14 @@ from .firewall_service import (
     get_wifi_name
 )
 from .cleanup_service import run_cleanup_now, get_storage_stats
+from .auth_service import (
+    authenticate_user, create_access_token, register_user,
+    create_default_admin, get_user_info, change_password,
+    hash_password
+)
+
+# In-memory token storage for simplicity (in production, use Redis/database)
+active_tokens = {}
 
 # Create FastAPI app
 app = FastAPI(
@@ -69,6 +77,199 @@ def is_localhost(request: Request) -> bool:
     return client_ip in ["127.0.0.1", "localhost", "::1"] or client_ip.startswith("192.168.")
 
 
+def get_current_user(token: Optional[str] = None) -> Optional[Dict]:
+    """Get current user from token."""
+    if not token:
+        return None
+    return active_tokens.get(token)
+
+
+async def get_auth_user(request: Request) -> Dict:
+    """Dependency to get authenticated user."""
+    token = request.cookies.get("auth_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Silakan login terlebih dahulu")
+
+    user = get_current_user(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Token tidak valid atau expired")
+
+    return user
+
+
+async def require_admin(request: Request) -> Dict:
+    """Dependency to require admin role."""
+    user = await get_auth_user(request)
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Akses ditolak. Hanya admin yang bisa akses.")
+    return user
+
+
+# ============ Authentication Endpoints ============
+
+@app.post("/api/auth/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    """Login endpoint."""
+    success, user_data, error = authenticate_user(username, password)
+
+    if not success:
+        return JSONResponse({"success": False, "message": error})
+
+    # Create token
+    token_data = create_access_token(user_data['id'], user_data['username'], user_data['role'])
+
+    # Store token
+    active_tokens[token_data['token']] = {
+        "user_id": user_data['id'],
+        "username": user_data['username'],
+        "role": user_data['role'],
+        "student_name": user_data.get('student_name', ''),
+        "student_nim": user_data.get('student_nim', '')
+    }
+
+    response = JSONResponse({
+        "success": True,
+        "message": "Login berhasil",
+        "user": {
+            "id": user_data['id'],
+            "username": user_data['username'],
+            "role": user_data['role']
+        },
+        "token": token_data['token'],
+        "expires_in": token_data['expires_in']
+    })
+    response.set_cookie(
+        key="auth_token",
+        value=token_data['token'],
+        httponly=True,
+        samesite="lax",
+        path="/",
+        max_age=token_data['expires_in']
+    )
+    return response
+
+
+@app.post("/api/auth/logout")
+async def logout(request: Request, token: Optional[str] = Form(None)):
+    """Logout endpoint."""
+    auth_token = request.cookies.get("auth_token") or token or request.headers.get("Authorization", "").replace("Bearer ", "")
+
+    if auth_token and auth_token in active_tokens:
+        del active_tokens[auth_token]
+
+    response = JSONResponse({"success": True, "message": "Logout berhasil"})
+    response.delete_cookie("auth_token", path="/")
+    return response
+
+
+@app.post("/api/auth/register")
+async def register(request: Request, username: str = Form(...), password: str = Form(...),
+                   role: str = Form("user"), student_name: str = Form(""), student_nim: str = Form("")):
+    """Register new user. Public registration allowed for user role; admin may create admin accounts."""
+    auth_token = request.cookies.get("auth_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
+    current_user = get_current_user(auth_token) if auth_token else None
+
+    if current_user and current_user.get('role') == 'admin':
+        # Admin may create admin or user accounts
+        allowed_role = role if role in ["user", "admin"] else "user"
+    else:
+        # Public registration can only create normal user accounts
+        if role != "user":
+            return {"success": False, "message": "Role admin hanya dapat dibuat oleh admin."}
+        allowed_role = "user"
+
+    success, result = register_user(username, password, allowed_role, student_name, student_nim)
+
+    if not success:
+        return {"success": False, "message": result}
+
+    return {"success": True, "message": "User berhasil dibuat", "user_id": result}
+
+
+@app.get("/api/auth/me")
+async def get_me(request: Request):
+    """Get current user info."""
+    try:
+        user = await get_auth_user(request)
+        return {"success": True, "user": user}
+    except HTTPException:
+        return {"success": False, "user": None}
+
+
+@app.get("/api/auth/users")
+async def get_users(request: Request):
+    """Get all users (admin only)."""
+    user = await require_admin(request)
+
+    users = get_all_users()
+    return {"success": True, "users": users}
+
+
+@app.patch("/api/auth/users/{user_id}")
+async def update_user_api(request: Request, user_id: str,
+                          role: Optional[str] = Form(None),
+                          student_name: Optional[str] = Form(None),
+                          student_nim: Optional[str] = Form(None),
+                          password: Optional[str] = Form(None)):
+    """Update user profile or role (admin only)."""
+    user = await require_admin(request)
+
+    if role is not None:
+        if role not in ["user", "admin"]:
+            return {"success": False, "message": "Role tidak valid"}
+        from .database import update_user_role
+        update_user_role(user_id, role)
+
+    if student_name is not None or student_nim is not None:
+        from .database import update_user_profile
+        update_user_profile(user_id, student_name=student_name, student_nim=student_nim)
+
+    if password:
+        if len(password) < 4:
+            return {"success": False, "message": "Password minimal 4 karakter"}
+        from .database import update_user_password
+        password_hash = hash_password(password)
+        update_user_password(user_id, password_hash)
+
+    return {"success": True, "message": "User berhasil diperbarui"}
+
+
+@app.delete("/api/auth/users/{user_id}")
+async def delete_user_api(request: Request, user_id: str):
+    """Delete a user (admin only)."""
+    user = await require_admin(request)
+
+    # Prevent deleting self
+    if user['user_id'] == user_id:
+        return {"success": False, "message": "Tidak bisa menghapus akun sendiri"}
+
+    from .database import delete_user
+    delete_user(user_id)
+
+    return {"success": True, "message": "User berhasil dihapus"}
+
+
+@app.post("/api/auth/users/{user_id}/toggle")
+async def toggle_user(request: Request, user_id: str):
+    """Toggle user active status (admin only)."""
+    admin_user = await require_admin(request)
+
+    # Prevent toggling self
+    if admin_user['user_id'] == user_id:
+        return {"success": False, "message": "Tidak bisa mengubah status akun sendiri"}
+
+    current_user = get_user_by_id(user_id)
+    if not current_user:
+        return {"success": False, "message": "User tidak ditemukan"}
+
+    from .database import toggle_user_status
+    new_status = not current_user.get('is_active', 1)
+    toggle_user_status(user_id, new_status)
+
+    return {"success": True, "message": f"Status diubah menjadi {'aktif' if new_status else 'nonaktif'}"}
+
+
 # ============ Root & Health ============
 
 @app.get("/")
@@ -81,6 +282,25 @@ async def root():
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok", "app": "LabSend", "timestamp": datetime.now().isoformat()}
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request, redirect: str = "/admin"):
+    """Login page."""
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "redirect_to": redirect,
+        "config": get_config()
+    })
+
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    """Public registration page."""
+    return templates.TemplateResponse("register.html", {
+        "request": request,
+        "config": get_config()
+    })
 
 
 @app.get("/api/token/{token}/status")
@@ -193,6 +413,11 @@ async def submit_identity(token: str, request: Request,
     if not is_valid:
         raise HTTPException(status_code=400, detail=message)
 
+    # Try to get authenticated user (optional)
+    auth_token = request.cookies.get("auth_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
+    current_user = get_current_user(auth_token) if auth_token else None
+    user_id = current_user.get('user_id') if current_user else None
+
     # Check if job already exists for this session (prevent duplicate jobs from same token)
     from .database import get_db_connection
     with get_db_connection() as conn:
@@ -208,9 +433,9 @@ async def submit_identity(token: str, request: Request,
             # Job already exists for this session, return the existing one
             # Only update name/nim if they provided different ones
             cursor.execute("""
-                UPDATE upload_jobs SET student_name = ?, student_nim = ?
+                UPDATE upload_jobs SET student_name = ?, student_nim = ?, user_id = ?
                 WHERE id = ?
-            """, (student_name, student_nim, existing_job['id']))
+            """, (student_name, student_nim, user_id, existing_job['id']))
             return {
                 "job_id": existing_job['id'],
                 "status": "waiting_upload",
@@ -222,13 +447,41 @@ async def submit_identity(token: str, request: Request,
     job_id = str(uuid.uuid4())
 
     from .database import create_upload_job
-    create_upload_job(job_id, session['id'], student_name, student_nim)
+    create_upload_job(job_id, session['id'], student_name, student_nim, user_id=user_id)
 
     return {
         "job_id": job_id,
         "status": "waiting_upload",
         "message": "Identity validated. Ready for file upload."
     }
+
+
+@app.get("/api/upload/{token}/job")
+async def get_upload_job_api(token: str):
+    """Get existing upload job for a QR token."""
+    is_valid, message, session = validate_token(token)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=message)
+
+    from .database import get_db_connection
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, student_name, student_nim, status FROM upload_jobs
+            WHERE qr_session_id = ?
+            ORDER BY created_at DESC LIMIT 1
+        """, (session['id'],))
+        row = cursor.fetchone()
+        if not row:
+            return {"exists": False}
+
+        return {
+            "exists": True,
+            "job_id": row[0],
+            "student_name": row[1],
+            "student_nim": row[2],
+            "status": row[3]
+        }
 
 
 @app.post("/api/upload/{token}/files")
@@ -268,9 +521,16 @@ async def upload_files(token: str, request: Request,
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
-    """Operator dashboard page."""
-    if not is_localhost(request):
-        raise HTTPException(status_code=403, detail="Dashboard hanya bisa diakses dari komputer ini")
+    """Operator dashboard page - requires admin role."""
+    try:
+        user = await require_admin(request)
+    except HTTPException:
+        # Redirect to login page
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "redirect_to": "/admin",
+            "config": get_config()
+        })
 
     qr_data = get_current_qr()
     stats = get_stats()
@@ -290,8 +550,84 @@ async def admin_page(request: Request):
         "config": get_config(),
         "lab_name": get_config("lab_name"),
         "server_url": get_server_url(),
-        "local_ip": get_local_ip()
+        "local_ip": get_local_ip(),
+        "current_user": user
     })
+
+
+# ============ Student Pages ============
+
+@app.get("/student/dashboard", response_class=HTMLResponse)
+async def student_dashboard(request: Request):
+    """Student dashboard - view their uploaded files."""
+    try:
+        user = await get_auth_user(request)
+    except HTTPException:
+        # Redirect to login page
+        return RedirectResponse(url="/login?redirect=/student/dashboard", status_code=302)
+
+    return templates.TemplateResponse("student_dashboard.html", {
+        "request": request,
+        "config": get_config(),
+        "current_user": user
+    })
+
+
+@app.get("/api/student/my-uploads")
+async def get_my_uploads(request: Request):
+    """Get current student's uploaded files."""
+    user = await get_auth_user(request)
+    user_id = user.get('user_id')
+
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User ID tidak ditemukan")
+
+    # Get all upload jobs for this user
+    jobs = get_user_upload_jobs(user_id)
+
+    # Enrich with file info
+    result = []
+    for job in jobs:
+        files = get_files_by_job(job['id'])
+        result.append({
+            "id": job['id'],
+            "student_name": job['student_name'],
+            "student_nim": job['student_nim'],
+            "status": job['status'],
+            "total_files": job['total_files'],
+            "total_size": job['total_size'],
+            "created_at": job['created_at'],
+            "uploaded_at": job.get('uploaded_at'),
+            "files": [{
+                "id": f['id'],
+                "original_name": f['original_name'],
+                "size_bytes": f['size_bytes'],
+                "extension": f['extension'],
+                "status": f['status'],
+                "created_at": f['created_at']
+            } for f in files]
+        })
+
+    return {
+        "success": True,
+        "uploads": result
+    }
+
+
+@app.get("/api/student/profile")
+async def get_student_profile(request: Request):
+    """Get current student's profile."""
+    user = await get_auth_user(request)
+
+    return {
+        "success": True,
+        "profile": {
+            "user_id": user.get('user_id'),
+            "username": user.get('username'),
+            "student_name": user.get('student_name', ''),
+            "student_nim": user.get('student_nim', '')
+        }
+    }
 
 
 @app.get("/api/jobs")
@@ -537,9 +873,14 @@ async def open_job_folder_api(job_id: str, request: Request):
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
-    """Settings page."""
-    if not is_localhost(request):
-        raise HTTPException(status_code=403, detail="Settings hanya bisa diakses dari komputer ini")
+    """Settings page - requires admin role."""
+    try:
+        user = await require_admin(request)
+    except HTTPException:
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "redirect_to": "/settings"
+        })
 
     config = get_config()
     storage = get_storage_stats()
@@ -550,7 +891,27 @@ async def settings_page(request: Request):
         "config": config,
         "storage": storage,
         "firewall_exists": firewall_exists,
-        "local_ip": get_local_ip()
+        "local_ip": get_local_ip(),
+        "current_user": user
+    })
+
+
+@app.get("/access-management", response_class=HTMLResponse)
+async def access_management_page(request: Request):
+    """Access management page for admin users."""
+    try:
+        user = await require_admin(request)
+    except HTTPException:
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "redirect_to": "/access-management",
+            "config": get_config()
+        })
+
+    return templates.TemplateResponse("access_management.html", {
+        "request": request,
+        "config": get_config(),
+        "current_user": user
     })
 
 

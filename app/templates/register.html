@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="html-root">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register - LabSend Print Transfer</title>
+    <link id="favicon-link" rel="icon" type="image/png" href="{{ config.app_icon_url or '' }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .dark body, body.dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+    </style>
+    <script>
+        (function() {
+            var theme = '{{ config.theme | default("light") }}';
+            var htmlRoot = document.getElementById('html-root');
+            if (theme === 'dark') {
+                htmlRoot.classList.remove('light');
+                htmlRoot.classList.add('dark');
+            }
+        })();
+    </script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+                {% if config.app_icon_url %}
+                <img src="{{ config.app_icon_url }}" alt="Logo" class="w-full h-full object-cover rounded-full">
+                {% else %}L{% endif %}
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900">Daftar Akun LabSend</h1>
+            <p class="text-gray-500 mt-1">Gunakan NIM 11 digit yang diawali dengan 09.</p>
+        </div>
+
+        <form id="register-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="username" name="username" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Masukkan username">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Minimal 4 karakter">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Mahasiswa</label>
+                <input type="text" id="student_name" name="student_name" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Nama lengkap">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">NIM Mahasiswa</label>
+                <input type="text" id="student_nim" name="student_nim" required maxlength="11"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="09xxxxxxxxx">
+            </div>
+
+            <div id="error-message" class="hidden text-red-500 text-sm text-center"></div>
+
+            <button type="submit" id="register-btn"
+                class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">person_add</span>
+                Daftar
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-500">Sudah punya akun? <a href="/login" class="text-indigo-600 hover:text-indigo-700 font-medium">Login di sini</a></p>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium text-sm shadow-lg hidden z-50"></div>
+
+    <script>
+        var registerForm = document.getElementById('register-form');
+        var errorDiv = document.getElementById('error-message');
+        var registerBtn = document.getElementById('register-btn');
+
+        function showToast(message) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(function() {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function validateNim(value) {
+            return /^09\d{9}$/.test(value);
+        }
+
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+
+            var username = document.getElementById('username').value.trim();
+            var password = document.getElementById('password').value;
+            var studentName = document.getElementById('student_name').value.trim();
+            var studentNim = document.getElementById('student_nim').value.trim();
+
+            if (!validateNim(studentNim)) {
+                errorDiv.textContent = 'NIM harus 11 digit dan diawali dengan 09';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Memproses...';
+
+            try {
+                var formData = new FormData();
+                formData.append('username', username);
+                formData.append('password', password);
+                formData.append('student_name', studentName);
+                formData.append('student_nim', studentNim);
+
+                var response = await fetch('/api/auth/register', { method: 'POST', body: formData });
+                var data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast('Pendaftaran berhasil. Silakan login.');
+                    setTimeout(function() {
+                        window.location.href = '/login';
+                    }, 1000);
+                } else {
+                    errorDiv.textContent = data.message || 'Pendaftaran gagal';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (e) {
+                errorDiv.textContent = 'Error: ' + e.message;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<span class="material-symbols-outlined">person_add</span> Daftar';
+            }
+        });
+    </script>
+</body>
+</html>

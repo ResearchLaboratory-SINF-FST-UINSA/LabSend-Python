@@ -77,7 +77,8 @@ def init_database():
                 previewed_at TEXT,
                 printed_at TEXT,
                 rejected_at TEXT,
-                deleted_at TEXT
+                deleted_at TEXT,
+                user_id TEXT
             )
         """)
 
@@ -127,6 +128,53 @@ def init_database():
         columns = [col[1] for col in cursor.fetchall()]
         if 'deleted_at' not in columns:
             cursor.execute("ALTER TABLE uploaded_files ADD COLUMN deleted_at TEXT")
+
+        # Add user_id column to upload_jobs for tracking student users
+        cursor.execute("PRAGMA table_info(upload_jobs)")
+        upload_jobs_columns = [col[1] for col in cursor.fetchall()]
+        if 'user_id' not in upload_jobs_columns:
+            cursor.execute("ALTER TABLE upload_jobs ADD COLUMN user_id TEXT")
+
+        # Create index for user uploads
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_upload_jobs_user ON upload_jobs(user_id)")
+
+        # Create users table and migrate schema for existing installations
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                student_name TEXT DEFAULT '',
+                student_nim TEXT DEFAULT '',
+                created_at TEXT NOT NULL,
+                last_login TEXT,
+                is_active INTEGER NOT NULL DEFAULT 1
+            )
+        """)
+
+        cursor.execute("PRAGMA table_info(users)")
+        user_columns = [col[1] for col in cursor.fetchall()]
+        if 'student_name' not in user_columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN student_name TEXT DEFAULT ''")
+        if 'student_nim' not in user_columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN student_nim TEXT DEFAULT ''")
+
+        # Create sessions table for JWT tokens
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                token_hash TEXT NOT NULL,
+                expires_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        """)
+
+        # Create index for sessions
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token_hash)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)")
 
 
 # ============ Settings Functions ============
@@ -242,15 +290,15 @@ def expire_old_qr_sessions() -> int:
 # ============ Upload Job Functions ============
 
 def create_upload_job(job_id: str, qr_session_id: str, student_name: str,
-                       student_nim: str) -> bool:
+                       student_nim: str, user_id: Optional[str] = None) -> bool:
     """Create a new upload job."""
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO upload_jobs (id, qr_session_id, student_name, student_nim, status, created_at)
-                VALUES (?, ?, ?, ?, 'waiting_upload', ?)
-            """, (job_id, qr_session_id, student_name, student_nim, datetime.now().isoformat()))
+                INSERT INTO upload_jobs (id, qr_session_id, student_name, student_nim, status, created_at, user_id)
+                VALUES (?, ?, ?, ?, 'waiting_upload', ?, ?)
+            """, (job_id, qr_session_id, student_name, student_nim, datetime.now().isoformat(), user_id))
         return True
     except Exception as e:
         print(f"Error creating upload job: {e}")
@@ -283,6 +331,28 @@ def get_all_jobs(status: Optional[str] = None, limit: int = 100) -> List[Dict[st
                 ORDER BY created_at DESC
                 LIMIT ?
             """, (limit,))
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+
+def get_user_upload_jobs(user_id: str, status: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
+    """Get all upload jobs for a specific user."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        if status:
+            cursor.execute("""
+                SELECT * FROM upload_jobs
+                WHERE user_id = ? AND status = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+            """, (user_id, status, limit))
+        else:
+            cursor.execute("""
+                SELECT * FROM upload_jobs
+                WHERE user_id = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+            """, (user_id, limit))
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
@@ -461,3 +531,140 @@ def get_stats() -> Dict[str, Any]:
             "total_size": total_size,
             "status_counts": status_counts
         }
+
+
+# ============ User Management Functions ============
+
+def create_user(user_id: str, username: str, password_hash: str, role: str = "user",
+                student_name: str = "", student_nim: str = "") -> bool:
+    """Create a new user."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO users (id, username, password_hash, role, student_name, student_nim, created_at, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+            """, (user_id, username, password_hash, role, student_name, student_nim, datetime.now().isoformat()))
+        return True
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        return False
+
+
+def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
+    """Get user by username."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
+def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
+    """Get user by ID."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
+def get_all_users() -> List[Dict[str, Any]]:
+    """Get all users."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username, role, student_name, student_nim, created_at, last_login, is_active FROM users ORDER BY created_at DESC")
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
+
+def update_user_login(username: str) -> bool:
+    """Update user's last login time."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users SET last_login = ? WHERE username = ?
+            """, (datetime.now().isoformat(), username))
+        return True
+    except Exception as e:
+        print(f"Error updating user login: {e}")
+        return False
+
+
+def delete_user(user_id: str) -> bool:
+    """Delete a user."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+            cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        return True
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        return False
+
+
+def update_user_password(user_id: str, new_password_hash: str) -> bool:
+    """Update user's password."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users SET password_hash = ? WHERE id = ?
+            """, (new_password_hash, user_id))
+        return True
+    except Exception as e:
+        print(f"Error updating password: {e}")
+        return False
+
+
+def update_user_profile(user_id: str, student_name: Optional[str] = None, student_nim: Optional[str] = None) -> bool:
+    """Update user's student profile."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            if student_name is not None and student_nim is not None:
+                cursor.execute("""
+                    UPDATE users SET student_name = ?, student_nim = ? WHERE id = ?
+                """, (student_name, student_nim, user_id))
+            elif student_name is not None:
+                cursor.execute("""
+                    UPDATE users SET student_name = ? WHERE id = ?
+                """, (student_name, user_id))
+            elif student_nim is not None:
+                cursor.execute("""
+                    UPDATE users SET student_nim = ? WHERE id = ?
+                """, (student_nim, user_id))
+        return True
+    except Exception as e:
+        print(f"Error updating user profile: {e}")
+        return False
+
+
+def update_user_role(user_id: str, role: str) -> bool:
+    """Update user's role."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users SET role = ? WHERE id = ?
+            """, (role, user_id))
+        return True
+    except Exception as e:
+        print(f"Error updating user role: {e}")
+        return False
+
+
+def toggle_user_status(user_id: str, is_active: bool) -> bool:
+    """Toggle user's active status."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users SET is_active = ? WHERE id = ?
+            """, (1 if is_active else 0, user_id))
+        return True
+    except Exception as e:
+        print(f"Error toggling user status: {e}")
+        return False

@@ -26,6 +26,7 @@ from app.qr_service import create_new_qr_session, get_current_qr
 from app.cleanup_service import start_cleanup_scheduler, stop_cleanup_scheduler
 from app.server import app
 from app.tray import start_tray, stop_tray, update_tray_tooltip
+from app.auth_service import create_default_admin
 
 # Global shutdown flag
 _shutdown_event = threading.Event()
@@ -75,6 +76,10 @@ def initialize_app():
     # Initialize database
     init_database()
     print(f"[LabSend] Database initialized")
+
+    # Create default admin user if none exists
+    create_default_admin()
+    print(f"[LabSend] Auth system ready")
 
     # Ensure upload folder exists
     ensure_upload_folder()

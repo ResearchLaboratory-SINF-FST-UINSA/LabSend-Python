@@ -1,0 +1,39 @@
+# LabSend Print Transfer - Dockerfile Development
+# Untuk development dengan hot reload
+# Build: docker build -f Dockerfile.dev -t labsend:dev .
+# Run: docker run -p 4711:4711 -v $(pwd):/app labsend:dev
+
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create data directories
+RUN mkdir -p /app/data/uploads
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV HOST=0.0.0.0
+ENV PORT=4711
+
+# Expose port
+EXPOSE 4711
+
+# Run with hot reload using uvicorn --reload
+CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "4711", "--reload"]

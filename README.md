@@ -2,29 +2,44 @@
 
 Aplikasi transfer file untuk print via QR Code berbasis web. Dibuat dengan Python + FastAPI untuk kemudahan penggunaan di laboratorium komputer.
 
-## Cara Menjalankan (Tanpa EXE)
+## Default Login
 
-### Metode 1: Double-Click (Paling Mudah)
+- **Username**: admin
+- **Password**: admin123
+
+## Cara Menjalankan
+
+### Metode 1: Docker (Recommended)
+
+**Build & Run:**
+```bash
+docker build -t labsend .
+docker run -d --name labsend -p 4711:4711 -v $(pwd)/data:/app/data labsend
+```
+
+**Docker Compose:**
+```bash
+docker-compose up -d
+```
+
+### Metode 2: Double-Click
 
 1. **Double-click file `run.bat`** di folder `labsend`
-2. Tunggu sampai server started
-3. Buka browser dan akses:
-   - **Dashboard**: http://localhost:4711/admin
-   - **QR Page**: http://localhost:4711/qr
-   - **Settings**: http://localhost:4711/settings
+2. Buka browser: http://localhost:4711/login
+3. Login dengan username: `admin`, password: `admin123`
 
-### Metode 2: Via Python Langsung
+### Metode 3: Via Python Langsung
 
 ```bash
 cd labsend
 python run_web.py
 ```
 
-### Metode 3: Via uvicorn
+### Metode 4: Via uvicorn
 
 ```bash
 cd labsend
-uvicorn app.server:app --host 0.0.0.0 --port 4711 --reload
+uvicorn app.server:app --host 0.0.0.0 --port 4711
 ```
 
 ## Fitur Utama
@@ -141,6 +156,54 @@ Konfigurasi tersimpan di `data/config.json`:
 | `max_files_per_session` | 10 | Max file per upload |
 | `qr_expire_seconds` | 120 | QR expired (detik) |
 | `auto_delete_after_hours` | 24 | Hapus file setelah (jam) |
+
+## Docker Commands
+
+```bash
+# Build image
+docker build -t labsend .
+
+# Build untuk production
+docker build -t labsend:latest --target production .
+
+# Run container
+docker run -d --name labsend -p 4711:4711 -v $(pwd)/data:/app/data labsend
+
+# Run dengan custom storage
+docker run -d --name labsend \
+  -p 4711:4711 \
+  -v ./data:/app/data \
+  -v /mnt/storage/uploads:/app/data/uploads \
+  labsend
+
+# Stop container
+docker stop labsend
+
+# Start ulang
+docker start labsend
+
+# Lihat logs
+docker logs -f labsend
+
+# Hapus container
+docker rm -f labsend
+```
+
+### Docker Compose
+
+```bash
+# Jalankan
+docker-compose up -d
+
+# Stop
+docker-compose down
+
+# Rebuild & jalankan
+docker-compose up -d --build
+
+# Lihat status
+docker-compose ps
+```
 
 ## Build EXE
 

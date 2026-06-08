@@ -1,0 +1,38 @@
+# LabSend Print Transfer - Docker Compose
+# Jalankan dengan: docker-compose up -d
+
+version: '3.8'
+
+services:
+  labsend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labsend
+    restart: unless-stopped
+    ports:
+      - "4711:4711"
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST=0.0.0.0
+      - PORT=4711
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4711/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: labsend with custom config
+  # labsend-custom:
+  #   build: .
+  #   container_name: labsend-custom
+  #   restart: unless-stopped
+  #   ports:
+  #     - "4712:4711"
+  #   volumes:
+  #     - ./data:/app/data
+  #     - /mnt/storage/uploads:/app/data/uploads  # Custom storage location

@@ -108,6 +108,56 @@
         .dark .hover\:text-green-600:hover { color: #4ade80 !important; }
         .dark .hover\:text-red-600:hover { color: #f87171 !important; }
         .dark .hover\:bg-indigo-700:hover { background-color: #4338ca !important; }
+        .dark .hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.15) !important; }
+        .dark .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.25) !important; }
+        .dark .hover\:bg-yellow-100:hover { background-color: rgba(234, 179, 8, 0.15) !important; }
+
+        /* Dark mode input fields */
+        .dark input, .dark select, .dark textarea {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+        .dark input::placeholder, .dark textarea::placeholder {
+            color: #64748b !important;
+        }
+        .dark input:read-only, .dark select:read-only {
+            background-color: #1e293b !important;
+        }
+
+        /* Dark mode table */
+        .dark table thead tr {
+            background-color: #1e293b !important;
+        }
+        .dark table tbody tr {
+            border-color: #334155 !important;
+        }
+        .dark table tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+
+        /* Dark mode access management section */
+        .dark #section-settings .bg-white {
+            background-color: #1e293b !important;
+        }
+        .dark #section-settings .bg-gray-50 {
+            background-color: #334155 !important;
+        }
+        .dark #section-settings .text-gray-700 {
+            color: #e2e8f0 !important;
+        }
+        .dark #section-settings .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+        .dark #section-settings .text-gray-600 {
+            color: #cbd5e1 !important;
+        }
+        .dark #section-settings .border-gray-200 {
+            border-color: #334155 !important;
+        }
+        .dark #section-settings .divide-y > * {
+            border-color: #334155 !important;
+        }
 
         /* Theme transition for smoother change */
         body, nav, header, footer, .bg-white, .bg-gray-50, .bg-gray-100, .bg-indigo-50, .bg-indigo-100 {
@@ -204,7 +254,7 @@
             </button>
             <button onclick="showSection('settings')" id="nav-settings" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
                 <span class="material-symbols-outlined">settings</span>
-                Settings
+                Settings & Access
             </button>
         </div>
 
@@ -234,6 +284,19 @@
                 <span id="datetime" class="text-sm text-gray-500"></span>
                 <button onclick="location.reload()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Refresh">
                     <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <div class="h-6 w-px bg-gray-200"></div>
+                <div class="flex items-center gap-2">
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-gray-700" id="user-name">{{ current_user.username if current_user else 'Guest' }}</p>
+                        <p class="text-xs text-gray-500" id="user-role">{{ current_user.role if current_user else '' }}</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold" id="user-avatar">
+                        {{ current_user.username[0].upper() if current_user else '?' }}
+                    </div>
+                </div>
+                <button onclick="logout()" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500" title="Logout">
+                    <span class="material-symbols-outlined">logout</span>
                 </button>
             </div>
         </header>
@@ -730,10 +793,88 @@
                         <span class="material-symbols-outlined">save</span>
                         Save All Settings
                     </button>
+
+                    <!-- Divider -->
+                    <div class="border-t border-gray-200 pt-6 mt-6">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">lock</span>
+                            Access Management
+                        </h2>
+                        <p class="text-gray-600 mb-6">Kelola akun pengguna untuk upload dan akses admin.</p>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">people</span>
+                            Daftar Pengguna
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-left text-sm text-gray-700">
+                                <thead>
+                                    <tr class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500 border-b border-gray-200">
+                                        <th class="px-4 py-3">Username</th>
+                                        <th class="px-4 py-3">Role</th>
+                                        <th class="px-4 py-3">Nama</th>
+                                        <th class="px-4 py-3">NIM</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3">Terakhir Login</th>
+                                        <th class="px-4 py-3 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body" class="divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Create User Form -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">person_add</span>
+                            Buat Akun Baru
+                        </h3>
+                        <form id="create-user-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+                                    <input id="new-username" type="text" required class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. mahasiswa01" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                                    <input id="new-password" type="password" required class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Minimal 4 karakter" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
+                                    <select id="new-role" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="user">User (Mahasiswa)</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Mahasiswa</label>
+                                    <input id="new-student-name" type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Nama lengkap" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">NIM Mahasiswa</label>
+                                    <input id="new-student-nim" type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="09xxxxxxxxx" />
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" class="flex-1 px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">person_add</span>
+                                    Buat Pengguna
+                                </button>
+                                <button type="reset" class="px-5 py-3 bg-gray-100 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold">
+                                    Reset
+                                </button>
+                            </div>
+                            <p id="create-user-message" class="text-sm text-gray-500"></p>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
 
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-lg hidden z-50"></div>
@@ -756,6 +897,13 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
+        // Check authentication on page load
+        var authToken = localStorage.getItem('auth_token');
+        if (!authToken) {
+            // Redirect to login if not authenticated
+            window.location.href = '/login?redirect=/admin';
+        }
+
         // Restore section and expanded jobs from sessionStorage on page load
         var savedSection = sessionStorage.getItem('labsend_active_section') || 'dashboard';
         var savedExpandedJob = sessionStorage.getItem('labsend_expanded_job');
@@ -769,9 +917,19 @@
 
         showSection(savedSection);
 
-        // Show/hide sections
+        // ============ Smart Auto-Refresh System ============
+        var isUserInteracting = false;
+        var refreshCheckInterval = null;
+        var autoRefreshTimer = null;
+        const IDLE_TIMEOUT = 3000;
+        const REFRESH_INTERVAL = 15000;
+        var currentSection = 'dashboard';
+
+        // ============ Section Navigation ============
+        // Track current section
         function showSection(section) {
             sessionStorage.setItem('labsend_active_section', section);
+            currentSection = section;
 
             var sections = ['dashboard', 'queue', 'qr-view', 'settings'];
             var navs = ['dashboard', 'queue', 'qr', 'settings'];
@@ -798,10 +956,51 @@
                 'dashboard': 'Dashboard',
                 'queue': 'Queue',
                 'qr-view': 'QR Display',
-                'settings': 'Settings'
+                'settings': 'Settings & Access Management'
             };
             document.getElementById('page-title').textContent = titles[section] || section;
         }
+
+        // Check if user is in settings section and has interacted with settings form
+        function isUserEditingSettings() {
+            if (currentSection !== 'settings') return false;
+            return isUserInteracting;
+        }
+
+        // Monitor user interactions on form inputs and selects - ONLY for settings section
+        document.addEventListener('focusin', function(e) {
+            if (currentSection === 'settings' && e.target.matches('input, select, textarea, [contenteditable]')) {
+                isUserInteracting = true;
+                if (refreshCheckInterval) {
+                    clearInterval(refreshCheckInterval);
+                    refreshCheckInterval = null;
+                }
+            }
+        });
+
+        document.addEventListener('focusout', function(e) {
+            // Only reset if leaving the settings section's form area
+            if (currentSection === 'settings') {
+                if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
+                autoRefreshTimer = setTimeout(function() {
+                    isUserInteracting = false;
+                }, IDLE_TIMEOUT);
+            }
+        });
+
+        // Also detect change events for auto-save scenarios
+        document.addEventListener('change', function(e) {
+            if (currentSection === 'settings' && e.target.matches('input, select')) {
+                isUserInteracting = true;
+            }
+        });
+
+        // Detect typing in inputs - only in settings section
+        document.addEventListener('input', function(e) {
+            if (currentSection === 'settings' && e.target.matches('input, textarea')) {
+                isUserInteracting = true;
+            }
+        });
 
         // Toast notification
         function showToast(message, duration) {
@@ -826,6 +1025,29 @@
             } catch (e) {
                 showToast('Error regenerating QR');
             }
+        }
+
+        // Logout function
+        async function logout() {
+            if (!confirm('Yakin ingin logout?')) return;
+
+            var token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    var formData = new FormData();
+                    formData.append('token', token);
+                    await fetch('/api/auth/logout', { method: 'POST', body: formData });
+                } catch (e) {
+                    console.log('Logout error:', e);
+                }
+            }
+
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            showToast('Logout berhasil');
+            setTimeout(function() {
+                window.location.href = '/login';
+            }, 500);
         }
 
         // Filter jobs
@@ -949,27 +1171,38 @@
             }
         }
 
-        // Auto-refresh jobs every 10 seconds - only refresh if not expanded
+        // Auto-refresh jobs every 15 seconds - smart refresh that avoids user interaction
+        // ONLY runs when on dashboard or queue sections, pauses when in settings
         function refreshJobs() {
+            // Skip refresh if user is in settings section and interacting
+            if (currentSection === 'settings' && isUserInteracting) {
+                return;
+            }
+
+            // Only refresh dashboard/queue sections
+            if (currentSection !== 'dashboard' && currentSection !== 'queue') {
+                return;
+            }
+
             var currentExpanded = sessionStorage.getItem('labsend_expanded_job');
 
             fetch('/api/jobs')
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
                     if (data.jobs && data.jobs.length > 0) {
-                        // Only reload if no row is expanded
-                        if (!currentExpanded) {
+                        // Only reload if no row is expanded and user is not interacting
+                        if (!currentExpanded && !isUserInteracting) {
                             location.reload();
                         }
                     }
                 })
                 .catch(function(e) {
-                    console.log('Auto-refresh check failed');
+                    console.log('Auto-refresh check failed:', e);
                 });
         }
 
-        // Check for new jobs every 10 seconds
-        setInterval(refreshJobs, 10000);
+        // Check for new jobs every 15 seconds - respects user interaction state
+        setInterval(refreshJobs, REFRESH_INTERVAL);
 
         // Mark job printed
         async function markJobPrinted(jobId, btnElement) {
@@ -1352,6 +1585,144 @@
                 faviconLink.href = iconUrl;
             }
         });
+
+        // ============ User Management Functions (Access Management) ============
+
+        function validateNim(nim) {
+            return /^09\d{9}$/.test(nim);
+        }
+
+        async function loadUsers() {
+            // Skip refresh if user is in settings section and interacting
+            if (currentSection === 'settings' && isUserInteracting) {
+                return;
+            }
+
+            try {
+                var response = await fetch('/api/auth/users');
+                var data = await response.json();
+                var tbody = document.getElementById('users-table-body');
+                if (!tbody) return;
+
+                tbody.innerHTML = '';
+
+                if (response.ok && data.success && Array.isArray(data.users)) {
+                    if (data.users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Belum ada pengguna</td></tr>';
+                        return;
+                    }
+                    data.users.forEach(function(user) {
+                        var tr = document.createElement('tr');
+                        tr.className = 'border-t border-gray-200 hover:bg-indigo-50 transition-colors';
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 font-medium">${user.username}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'}">
+                                    ${user.role}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">${user.student_name || '-'}</td>
+                            <td class="px-4 py-3 font-mono text-sm">${user.student_nim || '-'}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${user.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                    ${user.is_active ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">${user.last_login || '-'}</td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="toggleUserStatus('${user.id}', ${user.is_active})" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium hover:bg-gray-100 transition-colors">${user.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                                    <button onclick="deleteUser('${user.id}')" class="rounded-lg border border-red-300 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50 transition-colors">Hapus</button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) {
+                console.log('Gagal memuat pengguna:', e);
+            }
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+
+            var username = document.getElementById('new-username').value.trim();
+            var password = document.getElementById('new-password').value;
+            var role = document.getElementById('new-role').value;
+            var studentName = document.getElementById('new-student-name').value.trim();
+            var studentNim = document.getElementById('new-student-nim').value.trim();
+
+            if (!username || !password) {
+                showToast('Username dan password wajib diisi');
+                return;
+            }
+
+            if (role === 'user' && (!studentName || !studentNim)) {
+                showToast('Nama dan NIM wajib diisi untuk akun user');
+                return;
+            }
+
+            if (studentNim && !validateNim(studentNim)) {
+                showToast('NIM harus 11 digit dan diawali dengan 09');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+            formData.append('role', role);
+            formData.append('student_name', studentName);
+            formData.append('student_nim', studentNim);
+
+            try {
+                var response = await fetch('/api/auth/register', { method: 'POST', body: formData });
+                var data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast('Pengguna berhasil dibuat');
+                    document.getElementById('create-user-form').reset();
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Gagal membuat pengguna');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        async function toggleUserStatus(userId, currentStatus) {
+            var formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('is_active', currentStatus ? '0' : '1');
+            try {
+                await fetch('/api/auth/users/' + userId + '/toggle', { method: 'POST', body: formData });
+                loadUsers();
+                showToast('Status pengguna berhasil diubah');
+            } catch (e) {
+                showToast('Gagal mengubah status: ' + e.message);
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) return;
+            try {
+                var response = await fetch('/api/auth/users/' + userId, { method: 'DELETE' });
+                var data = await response.json();
+                if (response.ok && data.success) {
+                    showToast('Pengguna dihapus');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Gagal menghapus pengguna');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            }
+        }
+
+        // Initialize user management
+        document.getElementById('create-user-form').addEventListener('submit', createUser);
+        loadUsers();
     </script>
 </body>
 </html>
