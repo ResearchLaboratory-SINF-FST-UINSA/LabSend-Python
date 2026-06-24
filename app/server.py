@@ -272,10 +272,20 @@ async def toggle_user(request: Request, user_id: str):
 
 # ============ Root & Health ============
 
-@app.get("/")
-async def root():
-    """Root page - redirect to admin or QR."""
-    return {"message": "LabSend Print Transfer", "version": "1.0.0"}
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    """Root page - show student dashboard for authenticated students, QR page for guests."""
+    try:
+        user = await get_auth_user(request)
+        # If authenticated, show student dashboard
+        return templates.TemplateResponse("student_dashboard.html", {
+            "request": request,
+            "config": get_config(),
+            "current_user": user
+        })
+    except HTTPException:
+        # If not authenticated, redirect to QR page
+        return RedirectResponse(url="/qr", status_code=302)
 
 
 @app.get("/api/health")
@@ -521,21 +531,15 @@ async def upload_files(token: str, request: Request,
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
-    """Operator dashboard page - requires admin role."""
+    """Admin dashboard - requires admin role."""
     try:
         user = await require_admin(request)
     except HTTPException:
-        # Redirect to login page
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "redirect_to": "/admin",
-            "config": get_config()
-        })
+        return RedirectResponse(url="/login?redirect=/admin", status_code=302)
 
     qr_data = get_current_qr()
     stats = get_stats()
     jobs = get_all_jobs()
-    printers = get_available_printers()
 
     # Enrich jobs with file info
     for job in jobs:
@@ -546,7 +550,6 @@ async def admin_page(request: Request):
         "qr_data": qr_data,
         "stats": stats,
         "jobs": jobs,
-        "printers": printers,
         "config": get_config(),
         "lab_name": get_config("lab_name"),
         "server_url": get_server_url(),
@@ -555,23 +558,7 @@ async def admin_page(request: Request):
     })
 
 
-# ============ Student Pages ============
-
-@app.get("/student/dashboard", response_class=HTMLResponse)
-async def student_dashboard(request: Request):
-    """Student dashboard - view their uploaded files."""
-    try:
-        user = await get_auth_user(request)
-    except HTTPException:
-        # Redirect to login page
-        return RedirectResponse(url="/login?redirect=/student/dashboard", status_code=302)
-
-    return templates.TemplateResponse("student_dashboard.html", {
-        "request": request,
-        "config": get_config(),
-        "current_user": user
-    })
-
+# ============ Student API ============
 
 @app.get("/api/student/my-uploads")
 async def get_my_uploads(request: Request):
@@ -873,7 +860,7 @@ async def open_job_folder_api(job_id: str, request: Request):
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
-    """Settings page - requires admin role."""
+    """Settings page - redirect to admin settings section."""
     try:
         user = await require_admin(request)
     except HTTPException:
@@ -882,23 +869,15 @@ async def settings_page(request: Request):
             "redirect_to": "/settings"
         })
 
-    config = get_config()
-    storage = get_storage_stats()
-    firewall_exists = check_firewall_rule_exists()
-
-    return templates.TemplateResponse("settings.html", {
-        "request": request,
-        "config": config,
-        "storage": storage,
-        "firewall_exists": firewall_exists,
-        "local_ip": get_local_ip(),
-        "current_user": user
-    })
+    # Redirect to admin with settings section
+    from starlette.responses import RedirectResponse
+    response = RedirectResponse(url="/admin?section=settings", status_code=302)
+    return response
 
 
 @app.get("/access-management", response_class=HTMLResponse)
 async def access_management_page(request: Request):
-    """Access management page for admin users."""
+    """Access management page - redirect to admin access section."""
     try:
         user = await require_admin(request)
     except HTTPException:
@@ -908,11 +887,10 @@ async def access_management_page(request: Request):
             "config": get_config()
         })
 
-    return templates.TemplateResponse("access_management.html", {
-        "request": request,
-        "config": get_config(),
-        "current_user": user
-    })
+    # Redirect to admin with access section
+    from starlette.responses import RedirectResponse
+    response = RedirectResponse(url="/admin?section=access", status_code=302)
+    return response
 
 
 @app.get("/api/settings/folder-picker", response_class=HTMLResponse)

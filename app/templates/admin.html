@@ -29,7 +29,7 @@
         .dark .bg-purple-100 { background-color: #581c87 !important; }
         .dark .bg-blue-50, .dark .bg-blue-100 { background-color: #1e3a5f !important; }
 
-        /* Dark mode text - keep readable but not too bright */
+        /* Dark mode text */
         .dark .text-gray-900, .dark .text-gray-800 { color: #f1f5f9 !important; }
         .dark .text-gray-700 { color: #e2e8f0 !important; }
         .dark .text-gray-600 { color: #cbd5e1 !important; }
@@ -52,14 +52,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
         }
 
-        /* Dark mode sidebar fix - prevent scroll jumping */
-        .dark nav {
-            background-color: #1e293b !important;
-        }
-        .dark nav, .dark nav * {
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
         /* Dark mode header */
         .dark header {
             background-color: #1e293b !important;
@@ -74,29 +66,61 @@
         .dark footer .text-gray-500 { color: #94a3b8 !important; }
         .dark footer .text-gray-700 { color: #e2e8f0 !important; }
 
-        /* Dark mode sidebar scrollbar */
-        .dark nav::-webkit-scrollbar {
-            width: 6px;
+        /* Dark mode header */
+        .dark header, .dark #main-header {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
         }
-        .dark nav::-webkit-scrollbar-track {
-            background: #1e293b;
+        .dark header .text-gray-900, .dark #main-header .text-gray-900 { color: #f1f5f9 !important; }
+        .dark header .text-gray-700, .dark #main-header .text-gray-700 { color: #e2e8f0 !important; }
+        .dark header .text-gray-500, .dark #main-header .text-gray-500 { color: #94a3b8 !important; }
+
+        /* Dark mode toggle button */
+        .dark #sidebar-toggle {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
         }
-        .dark nav::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 3px;
+        .dark #sidebar-toggle:hover {
+            background-color: #334155 !important;
         }
 
-        /* Dark mode hover states - more subtle/darker */
-        .dark nav button:hover,
-        .dark nav a:hover {
+        /* Dark mode sidebar */
+        .dark #sidebar-inner {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        .dark #sidebar-inner, .dark #sidebar-inner * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark #sidebar-inner .bg-indigo-50 {
+            background-color: #312e81 !important;
+        }
+
+        /* Dark mode hover states */
+        .dark #sidebar-inner button:hover, .dark #sidebar-inner a:hover {
             background-color: rgba(255,255,255,0.05) !important;
         }
-        .dark nav button:active,
-        .dark nav a:active {
+        .dark #sidebar-inner button:active, .dark #sidebar-inner a:active {
             background-color: rgba(255,255,255,0.08) !important;
         }
-        .dark nav button.bg-indigo-100 {
+        .dark #sidebar-inner button.bg-indigo-100 {
             background-color: #312e81 !important;
+        }
+        .dark #sidebar-inner .text-indigo-600 {
+            color: #818cf8 !important;
+        }
+        .dark #sidebar-inner .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+        .dark #sidebar-inner .bg-gray-50 {
+            background-color: #334155 !important;
+        }
+        .dark #sidebar-inner .border-gray-200 {
+            border-color: #334155 !important;
+        }
+        .dark #sidebar-inner .border-gray-300 {
+            border-color: #475569 !important;
         }
         .dark .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.05) !important; }
         .dark .hover\:bg-gray-200:hover { background-color: rgba(255,255,255,0.08) !important; }
@@ -104,12 +128,6 @@
         .dark .hover\:bg-indigo-100:hover { background-color: rgba(99, 102, 241, 0.25) !important; }
         .dark .hover\:bg-green-100:hover { background-color: rgba(34, 197, 94, 0.15) !important; }
         .dark .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.15) !important; }
-        .dark .hover\:text-indigo-600:hover { color: #818cf8 !important; }
-        .dark .hover\:text-green-600:hover { color: #4ade80 !important; }
-        .dark .hover\:text-red-600:hover { color: #f87171 !important; }
-        .dark .hover\:bg-indigo-700:hover { background-color: #4338ca !important; }
-        .dark .hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.15) !important; }
-        .dark .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.25) !important; }
         .dark .hover\:bg-yellow-100:hover { background-color: rgba(234, 179, 8, 0.15) !important; }
 
         /* Dark mode input fields */
@@ -136,65 +154,112 @@
             background-color: rgba(99, 102, 241, 0.1) !important;
         }
 
-        /* Dark mode access management section */
-        .dark #section-settings .bg-white {
-            background-color: #1e293b !important;
-        }
-        .dark #section-settings .bg-gray-50 {
-            background-color: #334155 !important;
-        }
-        .dark #section-settings .text-gray-700 {
-            color: #e2e8f0 !important;
-        }
-        .dark #section-settings .text-gray-500 {
-            color: #94a3b8 !important;
-        }
-        .dark #section-settings .text-gray-600 {
-            color: #cbd5e1 !important;
-        }
-        .dark #section-settings .border-gray-200 {
-            border-color: #334155 !important;
-        }
-        .dark #section-settings .divide-y > * {
-            border-color: #334155 !important;
+        /* Theme transition */
+        body, nav, header, footer, .bg-white, .bg-gray-50, .bg-gray-100, .bg-indigo-50, .bg-indigo-100, input, select {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Theme transition for smoother change */
-        body, nav, header, footer, .bg-white, .bg-gray-50, .bg-gray-100, .bg-indigo-50, .bg-indigo-100 {
-            transition: background-color 0.3s ease, color 0.3s ease;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* ============ Collapsible Sidebar Styles ============ */
+        #sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 220px;
+            z-index: 30;
+            transition: width 0.3s ease;
+            overflow: hidden;
         }
-        * {
-            transition: border-color 0.3s ease;
+        #sidebar.collapsed {
+            width: 64px;
+        }
+        #sidebar-inner {
+            width: 220px;
+            height: 100%;
+            background: white;
         }
 
-        /* Custom Scrollbar - Aesthetic */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        /* Hide text and logo subtitle when collapsed */
+        #sidebar.collapsed .sidebar-text,
+        #sidebar.collapsed .sidebar-subtitle,
+        #sidebar.collapsed .sidebar-brand-text,
+        #sidebar.collapsed .lab-name-text,
+        #sidebar.collapsed .brand-text-container,
+        #sidebar.collapsed .lab-name-badge {
+            display: none !important;
         }
-        ::-webkit-scrollbar-track {
-            background: transparent;
+
+        /* Center logo when collapsed */
+        #sidebar.collapsed .sidebar-logo-container {
+            margin: 0 auto;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
+
+        /* Center icons and fix width when collapsed */
+        #sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            width: 48px !important;
+            margin-left: 8px !important;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        #sidebar.collapsed .nav-item .nav-label {
+            display: none;
         }
-        /* Firefox */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
+        #sidebar.collapsed .nav-item .nav-icon {
+            margin-right: 0;
         }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
+
+        /* System info hidden when collapsed */
+        #sidebar.collapsed .system-info-container {
+            display: none;
         }
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+
+        /* Toggle button */
+        #sidebar-toggle {
+            position: fixed;
+            left: 220px;
+            top: 12px;
+            z-index: 40;
+            transition: left 0.3s ease;
         }
-        .dark * {
-            scrollbar-color: #475569 transparent;
+        #sidebar-toggle.sidebar-collapsed {
+            left: 64px;
+        }
+
+        /* Main content adjusts */
+        #main-content {
+            margin-left: 220px;
+            transition: margin-left 0.3s ease;
+        }
+        #main-content.sidebar-collapsed {
+            margin-left: 64px;
+        }
+
+        /* Header padding adjusts */
+        #main-header {
+            transition: padding-left 0.3s ease;
+            padding-left: 236px;
+        }
+        #main-header.sidebar-collapsed {
+            padding-left: 80px;
+        }
+
+        /* Footer adjusts */
+        footer {
+            margin-left: 220px;
+            transition: margin-left 0.3s ease;
+        }
+        footer.sidebar-collapsed {
+            margin-left: 64px;
         }
     </style>
     <script>
@@ -215,206 +280,200 @@
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" onclick="toggleSidebar()" class="fixed top-3 z-50 p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 transition-all">
+        <span class="material-symbols-outlined text-xl" id="toggle-icon">menu_open</span>
+    </button>
+
     <!-- Sidebar Navigation -->
-    <nav class="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col fixed overflow-y-auto">
+    <div id="sidebar">
+        <div id="sidebar-inner" class="min-h-screen bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
         <!-- Brand Header -->
-        <div class="p-6 border-b border-gray-200">
+        <div class="p-3 border-b border-gray-200">
             <div class="flex items-center gap-3">
-                <div id="header-logo" class="app-logo-container w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden">
+                <div id="header-logo" class="app-logo-container sidebar-logo-container w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden flex-shrink-0">
                     {% if config.app_icon_url %}
                     <img src="{{ config.app_icon_url }}" alt="Logo" class="app-logo w-full h-full object-cover" onerror="this.parentElement.innerHTML='L'; this.parentElement.classList.add('flex','items-center','justify-center'); this.parentElement.classList.remove('overflow-hidden');">
                     {% else %}L{% endif %}
                 </div>
-                <div>
-                    <h1 class="font-bold text-indigo-600 text-lg">LabSend</h1>
-                    <p class="text-xs text-gray-500">Print Transfer System</p>
+                <div class="overflow-hidden brand-text-container">
+                    <h1 class="font-bold text-indigo-600 text-base sidebar-brand-text">LabSend</h1>
+                    <p class="text-[10px] text-gray-500 sidebar-subtitle">Print Transfer</p>
                 </div>
             </div>
         </div>
 
         <!-- Lab Name Badge -->
-        <div class="px-4 py-3 bg-indigo-50 border-b border-gray-200">
-            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Lab Context</p>
-            <p class="font-semibold text-sm text-indigo-600 mt-1">{{ lab_name }}</p>
+        <div class="px-3 py-2 bg-indigo-50 border-b border-gray-200 lab-name-badge">
+            <p class="text-[9px] font-semibold text-gray-500 uppercase tracking-wider truncate lab-name-text">{{ lab_name }}</p>
         </div>
 
         <!-- Navigation Items -->
-        <div class="flex-1 py-4 overflow-y-auto">
-            <button onclick="showSection('dashboard')" id="nav-dashboard" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 bg-indigo-100 text-indigo-700 rounded-lg font-semibold transition-all text-left">
-                <span class="material-symbols-outlined">dashboard</span>
-                Dashboard
+        <div class="flex-1 py-3 overflow-y-auto space-y-1">
+            <button onclick="showSection('dashboard')" id="nav-dashboard" class="nav-item w-[calc(100%-16px)] mx-2 flex items-center gap-2 px-3 py-2.5 bg-indigo-100 text-indigo-700 rounded-lg font-semibold transition-all text-sm">
+                <span class="material-symbols-outlined text-lg nav-icon">dashboard</span>
+                <span class="nav-label truncate">Dashboard</span>
             </button>
-            <button onclick="showSection('queue')" id="nav-queue" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
-                <span class="material-symbols-outlined">cloud_upload</span>
-                Upload
+            <button onclick="showSection('queue')" id="nav-queue" class="nav-item w-[calc(100%-16px)] mx-2 flex items-center gap-2 px-3 py-2.5 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-sm">
+                <span class="material-symbols-outlined text-lg nav-icon">cloud_upload</span>
+                <span class="nav-label truncate">Upload</span>
             </button>
-            <button onclick="showSection('qr-view')" id="nav-qr" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
-                <span class="material-symbols-outlined">qr_code</span>
-                QR Display
+            <button onclick="showSection('access')" id="nav-access" class="nav-item w-[calc(100%-16px)] mx-2 flex items-center gap-2 px-3 py-2.5 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-sm">
+                <span class="material-symbols-outlined text-lg nav-icon">manage_accounts</span>
+                <span class="nav-label truncate">Access</span>
             </button>
-            <button onclick="showSection('settings')" id="nav-settings" class="w-[calc(100%-32px)] mx-4 flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-left mt-2">
-                <span class="material-symbols-outlined">settings</span>
-                Settings & Access
+            <button onclick="showSection('settings')" id="nav-settings" class="nav-item w-[calc(100%-16px)] mx-2 flex items-center gap-2 px-3 py-2.5 text-gray-500 hover:bg-gray-100 rounded-lg font-medium transition-all text-sm">
+                <span class="material-symbols-outlined text-lg nav-icon">settings</span>
+                <span class="nav-label truncate">Settings</span>
             </button>
         </div>
 
         <!-- System Info -->
-        <div class="p-4 bg-gray-50 border-t border-gray-200">
-            <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Server Status</p>
-            <div class="space-y-1 text-xs">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                    <span class="text-gray-500">Online</span>
-                </div>
-                <div class="text-gray-500 font-mono">
-                    IP: {{ local_ip }}:{{ config.server_port }}
-                </div>
+        <div class="p-3 bg-gray-50 border-t border-gray-200 system-info-container">
+            <div class="flex items-center gap-2 text-xs">
+                <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+                <span class="text-gray-500 truncate system-info-text">{{ local_ip }}:{{ config.server_port }}</span>
             </div>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="flex-1 ml-64 flex flex-col">
+        </div>
+    </div>
+    <main id="main-content" class="flex-1 flex flex-col min-h-screen">
         <!-- Top Header -->
-        <header class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-            <div class="flex items-center gap-4">
-                <h2 class="text-xl font-bold text-gray-900" id="page-title">Dashboard</h2>
-            </div>
+        <header id="main-header" class="sticky top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
             <div class="flex items-center gap-3">
-                <span id="datetime" class="text-sm text-gray-500"></span>
+                <h2 class="text-lg font-bold text-gray-900" id="page-title">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="datetime" class="text-xs text-gray-500 hidden sm:inline"></span>
                 <button onclick="location.reload()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Refresh">
-                    <span class="material-symbols-outlined">refresh</span>
+                    <span class="material-symbols-outlined text-lg">refresh</span>
                 </button>
-                <div class="h-6 w-px bg-gray-200"></div>
+                <div class="h-5 w-px bg-gray-200"></div>
                 <div class="flex items-center gap-2">
-                    <div class="text-right">
+                    <div class="text-right hidden sm:block">
                         <p class="text-sm font-medium text-gray-700" id="user-name">{{ current_user.username if current_user else 'Guest' }}</p>
-                        <p class="text-xs text-gray-500" id="user-role">{{ current_user.role if current_user else '' }}</p>
+                        <p class="text-[10px] text-gray-500" id="user-role">{{ current_user.role if current_user else '' }}</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold" id="user-avatar">
+                    <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-sm" id="user-avatar">
                         {{ current_user.username[0].upper() if current_user else '?' }}
                     </div>
                 </div>
                 <button onclick="logout()" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500" title="Logout">
-                    <span class="material-symbols-outlined">logout</span>
+                    <span class="material-symbols-outlined text-lg">logout</span>
                 </button>
             </div>
         </header>
 
         <!-- Content Area -->
-        <div class="p-6 flex-1" id="content-area">
+        <div class="p-4 flex-1" id="content-area">
 
-            <!-- Dashboard Section -->
-            <div id="section-dashboard" class="space-y-6">
+            <!-- ============ Dashboard Section ============ -->
+            <div id="section-dashboard" class="space-y-4">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase">Queue Active</p>
-                                <p class="text-3xl font-bold text-indigo-600 mt-1" id="stat-queue">{{ stats.queue_count }}</p>
+                                <p class="text-[10px] font-semibold text-gray-500 uppercase">Queue Active</p>
+                                <p class="text-2xl font-bold text-indigo-600 mt-0.5" id="stat-queue">{{ stats.queue_count }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-xl text-indigo-600">queue</span>
+                            <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg text-indigo-600">queue</span>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase">Total Size</p>
-                                <p class="text-3xl font-bold text-green-600 mt-1" id="stat-size">{{ (stats.total_size / 1024 / 1024) | round(1) }} MB</p>
+                                <p class="text-[10px] font-semibold text-gray-500 uppercase">Total Size</p>
+                                <p class="text-2xl font-bold text-green-600 mt-0.5" id="stat-size">{{ (stats.total_size / 1024 / 1024) | round(1) }} MB</p>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-xl text-green-600">cloud_done</span>
+                            <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg text-green-600">cloud_done</span>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase">Jobs Today</p>
-                                <p class="text-3xl font-bold text-gray-900 mt-1" id="stat-today">{{ jobs | length }}</p>
+                                <p class="text-[10px] font-semibold text-gray-500 uppercase">Jobs Today</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-0.5" id="stat-today">{{ jobs | length }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-xl text-gray-500">today</span>
+                            <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg text-gray-500">today</span>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase">QR Token</p>
-                                <p class="text-lg font-bold font-mono text-indigo-600 mt-1" id="stat-token">{{ qr_data.token }}</p>
+                                <p class="text-[10px] font-semibold text-gray-500 uppercase">QR Token</p>
+                                <p class="text-sm font-bold font-mono text-indigo-600 mt-0.5 truncate" id="stat-token">{{ qr_data.token }}</p>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-xl text-indigo-600">qr_code_2</span>
+                            <div class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg text-indigo-600">qr_code_2</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-                    <h3 class="font-semibold text-lg mb-4">Quick Actions</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <a href="/qr" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                            <span class="material-symbols-outlined">qr_code</span>
-                            Fullscreen QR
+                <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                    <h3 class="font-semibold text-sm mb-3">Quick Actions</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="/qr" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition-colors">
+                            <span class="material-symbols-outlined text-sm">qr_code</span>
+                            <span>Fullscreen QR</span>
                         </a>
-                        <a href="/settings" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
-                            <span class="material-symbols-outlined">settings</span>
-                            Settings
-                        </a>
-                        <button onclick="regenerateQR()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
-                            <span class="material-symbols-outlined">refresh</span>
-                            Regenerate QR
+                        <button onclick="regenerateQR()" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 border border-gray-300 text-xs rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined text-sm">refresh</span>
+                            <span>Regenerate QR</span>
                         </button>
-                        <button onclick="openUploadFolder()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
-                            <span class="material-symbols-outlined">folder_open</span>
-                            Open Folder
+                        <button onclick="openUploadFolder()" class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 border border-gray-300 text-xs rounded-lg hover:bg-gray-200 transition-colors">
+                            <span class="material-symbols-outlined text-sm">folder_open</span>
+                            <span>Open Folder</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Quick Queue Table -->
                 {% if jobs %}
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-                        <h3 class="font-semibold text-lg">Recent Queue</h3>
-                        <button onclick="showSection('queue')" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Lihat Semua →</button>
+                <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-3 py-2.5 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="font-semibold text-sm">Recent Queue</h3>
+                        <button onclick="showSection('queue')" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium">Lihat Semua →</button>
                     </div>
                     <table class="w-full">
                         <thead class="bg-gray-50">
-                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase">
-                                <th class="px-4 py-3 w-12">
-                                    <input type="checkbox" id="select-all-files-quick" onchange="toggleSelectAllQuick(this)" class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                            <tr class="text-left text-[10px] font-semibold text-gray-500 uppercase">
+                                <th class="px-3 py-2 w-8">
+                                    <input type="checkbox" id="select-all-files-quick" onchange="toggleSelectAllQuick(this)" class="w-4 h-4 rounded border-gray-300 text-indigo-600 cursor-pointer">
                                 </th>
-                                <th class="px-4 py-3 w-12 text-center">No</th>
-                                <th class="px-4 py-3">Mahasiswa</th>
-                                <th class="px-4 py-3">NIM</th>
-                                <th class="px-4 py-3">Files</th>
-                                <th class="px-4 py-3">Size</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Waktu</th>
-                                <th class="px-4 py-3 text-center">Actions</th>
+                                <th class="px-3 py-2 w-8 text-center">No</th>
+                                <th class="px-3 py-2">Mahasiswa</th>
+                                <th class="px-3 py-2">NIM</th>
+                                <th class="px-3 py-2">Files</th>
+                                <th class="px-3 py-2">Size</th>
+                                <th class="px-3 py-2">Status</th>
+                                <th class="px-3 py-2 hidden lg:table-cell">Waktu</th>
+                                <th class="px-3 py-2 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="quick-table-body">
                             {% for job in jobs[:5] %}
                             <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" id="quick-job-row-{{ job.id }}" data-job-id="{{ job.id }}" onclick="toggleQuickJobDetails('{{ job.id }}')">
-                                <td class="px-4 py-3" onclick="event.stopPropagation()">
-                                    <input type="checkbox" class="file-checkbox-quick w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" data-job-id="{{ job.id }}">
+                                <td class="px-3 py-2" onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="file-checkbox-quick w-4 h-4 rounded border-gray-300 text-indigo-600 cursor-pointer" data-job-id="{{ job.id }}">
                                 </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-500 font-medium">{{ loop.index }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="font-semibold text-indigo-600">{{ job.student_name }}</div>
+                                <td class="px-3 py-2 text-center text-xs text-gray-500 font-medium">{{ loop.index }}</td>
+                                <td class="px-3 py-2">
+                                    <div class="font-semibold text-indigo-600 text-xs">{{ job.student_name }}</div>
                                 </td>
-                                <td class="px-4 py-3 font-mono text-sm text-gray-500">{{ job.student_nim }}</td>
-                                <td class="px-4 py-3 text-sm font-medium">{{ job.total_files }}</td>
-                                <td class="px-4 py-3 text-sm">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                <td class="px-3 py-2 font-mono text-xs text-gray-500">{{ job.student_nim }}</td>
+                                <td class="px-3 py-2 text-xs font-medium">{{ job.total_files }}</td>
+                                <td class="px-3 py-2 text-xs">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
+                                <td class="px-3 py-2">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
                                         {% if job.status == 'uploaded' %}bg-green-100 text-green-700
                                         {% elif job.status == 'printed' %}bg-indigo-100 text-indigo-700
                                         {% elif job.status == 'rejected' %}bg-red-100 text-red-700
@@ -422,23 +481,20 @@
                                         {{ job.status }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ job.created_at.replace('T', ' ')[:19] }}</td>
-                                <td class="px-4 py-3" onclick="event.stopPropagation()">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-1.5 hover:bg-indigo-100 rounded text-gray-500 hover:text-indigo-600" title="View">
-                                            <span class="material-symbols-outlined text-base">visibility</span>
+                                <td class="px-3 py-2 text-xs text-gray-500 hidden lg:table-cell">{{ job.created_at.replace('T', ' ')[:16] }}</td>
+                                <td class="px-3 py-2" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-0.5">
+                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-1 hover:bg-indigo-100 rounded text-gray-500 hover:text-indigo-600" title="View">
+                                            <span class="material-symbols-outlined text-sm">visibility</span>
                                         </button>
-                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-1.5 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Folder">
-                                            <span class="material-symbols-outlined text-base">folder</span>
+                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-1 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Folder">
+                                            <span class="material-symbols-outlined text-sm">folder</span>
                                         </button>
-                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-1.5 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Printed">
-                                            <span class="material-symbols-outlined text-base">check_circle</span>
+                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-1 hover:bg-green-100 rounded text-gray-500 hover:text-green-600" title="Printed">
+                                            <span class="material-symbols-outlined text-sm">check_circle</span>
                                         </button>
-                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-1.5 hover:bg-yellow-100 rounded text-gray-500 hover:text-yellow-600" title="Tolak">
-                                            <span class="material-symbols-outlined text-base">cancel</span>
-                                        </button>
-                                        <button onclick="hardDeleteJob('{{ job.id }}', this)" class="p-1.5 hover:bg-red-100 rounded text-gray-500 hover:text-red-600" title="Hapus Permanen">
-                                            <span class="material-symbols-outlined text-base">delete_forever</span>
+                                        <button onclick="hardDeleteJob('{{ job.id }}', this)" class="p-1 hover:bg-red-100 rounded text-gray-500 hover:text-red-600" title="Hapus">
+                                            <span class="material-symbols-outlined text-sm">delete_forever</span>
                                         </button>
                                     </div>
                                 </td>
@@ -447,11 +503,10 @@
                             <tr id="quick-details-row-{{ job.id }}" class="hidden">
                                 <td colspan="9" class="p-0 bg-indigo-50">
                                     {% for file in job.files %}
-                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-3 px-4 py-2 border-t border-gray-200 hover:bg-indigo-100 transition-all">
-                                        <span class="material-symbols-outlined text-base text-indigo-600">description</span>
-                                        <span class="flex-1 text-sm text-gray-800 truncate">{{ file.original_name }}</span>
-                                        <span class="text-xs text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
-                                        <span class="material-symbols-outlined text-sm text-green-600">open_in_new</span>
+                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-2 px-3 py-1.5 border-t border-gray-200 hover:bg-indigo-100 transition-all">
+                                        <span class="material-symbols-outlined text-xs text-indigo-600">description</span>
+                                        <span class="flex-1 text-xs text-gray-800 truncate">{{ file.original_name }}</span>
+                                        <span class="text-[10px] text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
                                     </a>
                                     {% endfor %}
                                 </td>
@@ -464,71 +519,69 @@
                 {% endif %}
             </div>
 
-            <!-- Queue Section -->
-            <div id="section-queue" class="hidden space-y-6">
+            <!-- ============ Queue Section ============ -->
+            <div id="section-queue" class="hidden space-y-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-lg">Upload</h3>
-                    <div class="flex gap-2">
-                        <button onclick="filterJobs('all')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-100 text-indigo-700" id="filter-all">All</button>
-                        <button onclick="filterJobs('uploaded')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-uploaded">Uploaded</button>
-                        <button onclick="filterJobs('printed')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-printed">Printed</button>
+                    <h3 class="font-semibold text-sm">Upload</h3>
+                    <div class="flex gap-1">
+                        <button onclick="filterJobs('all')" class="px-2 py-1 text-[10px] font-semibold rounded-lg bg-indigo-100 text-indigo-700" id="filter-all">All</button>
+                        <button onclick="filterJobs('uploaded')" class="px-2 py-1 text-[10px] font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-uploaded">Uploaded</button>
+                        <button onclick="filterJobs('printed')" class="px-2 py-1 text-[10px] font-semibold rounded-lg bg-gray-100 border border-gray-300" id="filter-printed">Printed</button>
                     </div>
                 </div>
 
                 <!-- Bulk Actions Bar -->
-                <div id="bulk-actions-bar" class="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-3 hidden">
+                <div id="bulk-actions-bar" class="bg-white rounded-lg border border-gray-200 shadow-sm px-3 py-2 hidden">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-600"><span id="selected-count">0</span> file dipilih</span>
-                            <div class="flex gap-2">
-                                <button onclick="bulkMarkPrinted()" class="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
-                                    <span class="material-symbols-outlined text-base">check_circle</span>
-                                    Mark Printed
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-gray-600"><span id="selected-count">0</span> dipilih</span>
+                            <div class="flex gap-1">
+                                <button onclick="bulkMarkPrinted()" class="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-medium hover:bg-green-200 transition-colors">
+                                    <span class="material-symbols-outlined text-xs">check_circle</span>
+                                    Printed
                                 </button>
-                                <button onclick="bulkDeleteFiles()" class="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
-                                    <span class="material-symbols-outlined text-base">delete</span>
+                                <button onclick="bulkDeleteFiles()" class="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-medium hover:bg-red-200 transition-colors">
+                                    <span class="material-symbols-outlined text-xs">delete</span>
                                     Delete
                                 </button>
                             </div>
                         </div>
-                        <button onclick="clearSelection()" class="text-xs text-gray-500 hover:text-gray-700">
-                            Clear Selection
-                        </button>
+                        <button onclick="clearSelection()" class="text-[10px] text-gray-500 hover:text-gray-700">Clear</button>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <table class="w-full">
                         <thead class="bg-gray-50">
-                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase">
-                                <th class="px-4 py-3 w-12">
-                                    <input type="checkbox" id="select-all-files" onchange="toggleSelectAll(this)" class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                            <tr class="text-left text-[10px] font-semibold text-gray-500 uppercase">
+                                <th class="px-3 py-2 w-8">
+                                    <input type="checkbox" id="select-all-files" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded border-gray-300 text-indigo-600 cursor-pointer">
                                 </th>
-                                <th class="px-4 py-3 w-12 text-center">No</th>
-                                <th class="px-4 py-3">Mahasiswa</th>
-                                <th class="px-4 py-3">NIM</th>
-                                <th class="px-4 py-3">Files</th>
-                                <th class="px-4 py-3">Size</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Waktu</th>
-                                <th class="px-4 py-3 text-center">Actions</th>
+                                <th class="px-3 py-2 w-8 text-center">No</th>
+                                <th class="px-3 py-2">Mahasiswa</th>
+                                <th class="px-3 py-2">NIM</th>
+                                <th class="px-3 py-2">Files</th>
+                                <th class="px-3 py-2">Size</th>
+                                <th class="px-3 py-2">Status</th>
+                                <th class="px-3 py-2 hidden lg:table-cell">Waktu</th>
+                                <th class="px-3 py-2 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="jobs-table-body">
                             {% for job in jobs %}
                             <tr class="border-t border-gray-200 hover:bg-indigo-50 cursor-pointer transition-colors" data-status="{{ job.status }}" data-job-id="{{ job.id }}" onclick="toggleJobDetails('{{ job.id }}')" id="job-row-{{ job.id }}">
-                                <td class="px-4 py-3" onclick="event.stopPropagation()">
-                                    <input type="checkbox" class="file-checkbox w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" data-job-id="{{ job.id }}">
+                                <td class="px-3 py-2" onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="file-checkbox w-4 h-4 rounded border-gray-300 text-indigo-600 cursor-pointer" data-job-id="{{ job.id }}">
                                 </td>
-                                <td class="px-4 py-3 text-center text-sm text-gray-500 font-medium">{{ loop.index }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="font-semibold text-indigo-600">{{ job.student_name }}</div>
+                                <td class="px-3 py-2 text-center text-xs text-gray-500 font-medium">{{ loop.index }}</td>
+                                <td class="px-3 py-2">
+                                    <div class="font-semibold text-indigo-600 text-xs">{{ job.student_name }}</div>
                                 </td>
-                                <td class="px-4 py-3 font-mono text-sm text-gray-500">{{ job.student_nim }}</td>
-                                <td class="px-4 py-3 text-sm font-medium">{{ job.total_files }} file</td>
-                                <td class="px-4 py-3 text-sm">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                <td class="px-3 py-2 font-mono text-xs text-gray-500">{{ job.student_nim }}</td>
+                                <td class="px-3 py-2 text-xs font-medium">{{ job.total_files }} file</td>
+                                <td class="px-3 py-2 text-xs">{{ (job.total_size / 1024 / 1024) | round(1) }} MB</td>
+                                <td class="px-3 py-2">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold
                                         {% if job.status == 'uploaded' %}bg-green-100 text-green-700
                                         {% elif job.status == 'printed' %}bg-indigo-100 text-indigo-700
                                         {% elif job.status == 'rejected' %}bg-red-100 text-red-700
@@ -536,37 +589,32 @@
                                         {{ job.status }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ job.created_at.replace('T', ' ')[:19] }}</td>
-                                <td class="px-4 py-3" onclick="event.stopPropagation()">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-2 hover:bg-indigo-100 rounded-lg text-gray-500 hover:text-indigo-600 transition-colors" title="View File">
-                                            <span class="material-symbols-outlined text-lg">visibility</span>
+                                <td class="px-3 py-2 text-xs text-gray-500 hidden lg:table-cell">{{ job.created_at.replace('T', ' ')[:16] }}</td>
+                                <td class="px-3 py-2" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-0.5">
+                                        <button onclick="viewFile('{% if job.files %}{{ job.files[0].id }}{% endif %}')" class="p-1.5 hover:bg-indigo-100 rounded-lg text-gray-500 hover:text-indigo-600 transition-colors" title="View">
+                                            <span class="material-symbols-outlined text-sm">visibility</span>
                                         </button>
-                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-2 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Open Folder">
-                                            <span class="material-symbols-outlined text-lg">folder</span>
+                                        <button onclick="openJobFolder('{{ job.id }}')" class="p-1.5 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Folder">
+                                            <span class="material-symbols-outlined text-sm">folder</span>
                                         </button>
-                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-2 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Mark Printed">
-                                            <span class="material-symbols-outlined text-lg">check_circle</span>
+                                        <button onclick="markJobPrinted('{{ job.id }}', this)" class="p-1.5 hover:bg-green-100 rounded-lg text-gray-500 hover:text-green-600 transition-colors" title="Printed">
+                                            <span class="material-symbols-outlined text-sm">check_circle</span>
                                         </button>
-                                        <button onclick="rejectJob('{{ job.id }}', this)" class="p-2 hover:bg-yellow-100 rounded-lg text-gray-500 hover:text-yellow-600 transition-colors" title="Tolak">
-                                            <span class="material-symbols-outlined text-lg">cancel</span>
-                                        </button>
-                                        <button onclick="hardDeleteJob('{{ job.id }}', this)" class="p-2 hover:bg-red-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors" title="Hapus Permanen">
-                                            <span class="material-symbols-outlined text-lg">delete_forever</span>
+                                        <button onclick="hardDeleteJob('{{ job.id }}', this)" class="p-1.5 hover:bg-red-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors" title="Hapus">
+                                            <span class="material-symbols-outlined text-sm">delete_forever</span>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
                             {% if job.files %}
-                            <!-- Hidden details row -->
                             <tr id="details-row-{{ job.id }}" class="hidden">
                                 <td colspan="9" class="p-0 bg-indigo-50">
                                     {% for file in job.files %}
-                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-3 px-4 py-2 border-t border-gray-200 hover:bg-indigo-100 transition-all">
-                                        <span class="material-symbols-outlined text-base text-indigo-600">description</span>
-                                        <span class="flex-1 text-sm text-gray-800 truncate">{{ file.original_name }}</span>
-                                        <span class="text-xs text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
-                                        <span class="material-symbols-outlined text-sm text-green-600">open_in_new</span>
+                                    <a href="/files/{{ file.id }}/view" target="_blank" class="flex items-center gap-2 px-3 py-1.5 border-t border-gray-200 hover:bg-indigo-100 transition-all">
+                                        <span class="material-symbols-outlined text-xs text-indigo-600">description</span>
+                                        <span class="flex-1 text-xs text-gray-800 truncate">{{ file.original_name }}</span>
+                                        <span class="text-[10px] text-gray-500">{{ (file.size_bytes / 1024 / 1024) | round(2) }} MB</span>
                                     </a>
                                     {% endfor %}
                                 </td>
@@ -576,250 +624,33 @@
                         </tbody>
                     </table>
                     {% if not jobs %}
-                    <div class="p-8 text-center text-gray-500">
-                        <span class="material-symbols-outlined text-4xl">inbox</span>
-                        <p class="mt-2">Belum ada upload masuk</p>
+                    <div class="p-6 text-center text-gray-500">
+                        <span class="material-symbols-outlined text-3xl">inbox</span>
+                        <p class="mt-1 text-xs">Belum ada upload masuk</p>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- QR View Section -->
-            <div id="section-qr-view" class="hidden">
-                <div class="max-w-md mx-auto bg-white rounded-xl p-8 border border-gray-200 shadow-lg text-center">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Scan untuk Upload</h2>
-                    <p class="text-sm text-gray-500 mb-6">{{ server_url }}/u/{{ qr_data.token }}</p>
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 inline-block shadow-sm">
-                        <img src="{{ qr_data.qr_image }}" alt="QR Code" class="w-64 h-64 mx-auto">
-                    </div>
-                    <div class="mt-6 space-y-2">
-                        <p class="text-sm text-gray-500">Token aktif selama <span id="qr-timer" class="font-bold text-indigo-600">{{ qr_data.expires_in }}</span> detik</p>
-                        <button onclick="regenerateQR()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold">
-                            Regenerate QR
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Section -->
-            <div id="section-settings" class="hidden">
-                <div class="max-w-3xl space-y-6">
-
-                    <!-- Server Settings Card -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">dns</span>
-                            Server Configuration
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Nama Lab</label>
-                                <input type="text" id="setting-lab-name" value="{{ config.lab_name }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Server Host</label>
-                                <input type="text" id="setting-host" value="{{ config.server_host }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Server Port</label>
-                                <input type="number" id="setting-port" value="{{ config.server_port }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500" readonly>
-                                <p class="text-xs text-gray-400 mt-1">* Restart untuk ubah port</p>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Public Base URL</label>
-                                <input type="text" id="setting-public-url" value="{{ config.public_base_url or '' }}" placeholder="https://domain.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                                <p class="text-xs text-gray-400 mt-1">* Untuk Cloudflare Tunnel</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <label class="block text-xs font-semibold text-gray-500 mb-1.5">URL Icon / Favicon</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="setting-app-icon" value="{{ config.app_icon_url or '' }}" placeholder="https://example.com/icon.png" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                                <button onclick="previewIcon()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Preview">
-                                    <span class="material-symbols-outlined">visibility</span>
-                                </button>
-                                <button onclick="clearIcon()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Clear">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                            <p class="text-xs text-gray-400 mt-1">PNG, JPG, WEBP, ICO. Preview akan mengubah favicon browser.</p>
-                            <div id="icon-preview" class="mt-2 flex items-center gap-3 {% if not config.app_icon_url %}hidden{% endif %}">
-                                <img id="icon-preview-img" src="{{ config.app_icon_url or '' }}" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-gray-300" onerror="this.style.display='none'">
-                                <span class="text-xs text-green-600 font-medium">Icon aktif</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Upload Settings Card -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">folder</span>
-                            Upload Settings
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Lokasi Folder</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="setting-folder" value="{{ config.upload_folder }}" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                                    <button onclick="browseFolder()" class="px-4 py-2 bg-indigo-100 border border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium flex items-center gap-1" title="Browse">
-                                        <span class="material-symbols-outlined text-base">folder_open</span>
-                                        Browse
-                                    </button>
-                                    <button onclick="openUploadFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Open Folder">Open</button>
-                                    <button onclick="testFolder()" class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors text-sm" title="Test">Test</button>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Size/File (MB)</label>
-                                    <input type="number" id="setting-max-size" value="{{ config.max_file_size_mb }}" min="1" max="500" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Total (MB)</label>
-                                    <input type="number" id="setting-max-total" value="{{ config.max_total_upload_mb }}" min="1" max="1000" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1.5">Max Files/Session</label>
-                                    <input type="number" id="setting-max-files" value="{{ config.max_files_per_session }}" min="1" max="50" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- File Extensions Card -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">rule</span>
-                            File Extensions
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Ekstensi Diperbolehkan</label>
-                                <input type="text" id="setting-allowed-ext" value="{{ config.allowed_extensions | join(', ') }}" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500">
-                                <p class="text-xs text-gray-400 mt-1">Pisahkan dengan koma: pdf, docx, png, jpg</p>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Ekstensi Diblokir</label>
-                                <input type="text" id="setting-blocked-ext" value="{{ config.blocked_extensions | join(', ') }}" class="w-full bg-gray-100 border border-gray-300 rounded-lg p-2.5 text-sm font-mono focus:ring-2 focus:ring-indigo-500" readonly>
-                                <p class="text-xs text-red-500 mt-1">* Executable & script selalu diblokir</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Security Card -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">security</span>
-                            Keamanan
-                        </h3>
-                        <div class="space-y-4">
-                            <!-- Firewall Status -->
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium">Firewall Status</span>
-                                    {% if firewall_exists %}
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                        <span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
-                                        Active
-                                    </span>
-                                    {% else %}
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                                        <span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span>
-                                        Not Configured
-                                    </span>
-                                    {% endif %}
-                                </div>
-                                <p class="text-xs text-gray-500">Buka port agar HP mahasiswa bisa mengakses upload.</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="setupFirewall()" class="flex-1 bg-indigo-600 text-white px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined text-base">add_circle</span>
-                                    Setup Firewall
-                                </button>
-                                <button onclick="checkFirewall()" class="flex-1 bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                                    Check Status
-                                </button>
-                            </div>
-
-                            <!-- Auto Cleanup -->
-                            <div class="border-t border-gray-200 pt-4 mt-4">
-                                <h4 class="text-sm font-semibold mb-3">Auto Cleanup</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                                    <label class="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" id="setting-auto-delete" {% if config.auto_delete_enabled %}checked{% endif %} class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                        <span class="text-sm font-medium">Aktifkan Auto Delete</span>
-                                    </label>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-500 mb-1.5">Hapus Setelah (Jam)</label>
-                                        <input type="number" id="setting-auto-delete-hours" value="{{ config.auto_delete_after_hours }}" min="1" max="168" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                                    </div>
-                                </div>
-                                <button onclick="runCleanup()" class="mt-3 w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined text-base">delete_sweep</span>
-                                    Jalankan Cleanup Sekarang
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- System Card -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">palette</span>
-                            Sistem
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1.5">Theme</label>
-                                <select id="setting-theme" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
-                                    <option value="light" {% if config.theme == 'light' %}selected{% endif %}>Light Mode</option>
-                                    <option value="dark" {% if config.theme == 'dark' %}selected{% endif %}>Dark Mode</option>
-                                    <option value="system" {% if config.theme == 'system' %}selected{% endif %}>System Default</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end">
-                                <div class="bg-gray-50 rounded-lg p-3 w-full">
-                                    <p class="text-xs text-gray-500">Storage Stats</p>
-                                    <p class="text-sm font-semibold text-gray-700">{{ config.lab_name }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Save Button -->
-                    <button onclick="saveSettings()" class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center gap-2">
-                        <span class="material-symbols-outlined">save</span>
-                        Save All Settings
-                    </button>
-
-                    <!-- Divider -->
-                    <div class="border-t border-gray-200 pt-6 mt-6">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-indigo-600">lock</span>
-                            Access Management
-                        </h2>
-                        <p class="text-gray-600 mb-6">Kelola akun pengguna untuk upload dan akses admin.</p>
-                    </div>
-
+            <!-- ============ Access Section ============ -->
+            <div id="section-access" class="hidden space-y-3">
+                <div class="max-w-3xl space-y-3">
                     <!-- Users Table -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
                             <span class="material-symbols-outlined text-indigo-600">people</span>
                             Daftar Pengguna
                         </h3>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full text-left text-sm text-gray-700">
+                            <table class="min-w-full text-left text-xs">
                                 <thead>
-                                    <tr class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500 border-b border-gray-200">
-                                        <th class="px-4 py-3">Username</th>
-                                        <th class="px-4 py-3">Role</th>
-                                        <th class="px-4 py-3">Nama</th>
-                                        <th class="px-4 py-3">NIM</th>
-                                        <th class="px-4 py-3">Status</th>
-                                        <th class="px-4 py-3">Terakhir Login</th>
-                                        <th class="px-4 py-3 text-center">Aksi</th>
+                                    <tr class="bg-gray-50 text-[10px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+                                        <th class="px-3 py-2">Username</th>
+                                        <th class="px-3 py-2">Role</th>
+                                        <th class="px-3 py-2">Nama</th>
+                                        <th class="px-3 py-2">NIM</th>
+                                        <th class="px-3 py-2">Status</th>
+                                        <th class="px-3 py-2 text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="users-table-body" class="divide-y divide-gray-200"></tbody>
@@ -828,68 +659,304 @@
                     </div>
 
                     <!-- Create User Form -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
                             <span class="material-symbols-outlined text-indigo-600">person_add</span>
                             Buat Akun Baru
                         </h3>
-                        <form id="create-user-form" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form id="create-user-form" class="space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
-                                    <input id="new-username" type="text" required class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. mahasiswa01" />
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Username</label>
+                                    <input id="new-username" type="text" required class="w-full rounded border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. mahasiswa01" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
-                                    <input id="new-password" type="password" required class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Minimal 4 karakter" />
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Password</label>
+                                    <input id="new-password" type="password" required class="w-full rounded border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Min 4 karakter" />
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-3 gap-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
-                                    <select id="new-role" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="user">User (Mahasiswa)</option>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Role</label>
+                                    <select id="new-role" class="w-full rounded border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        <option value="user">User</option>
                                         <option value="admin">Admin</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Mahasiswa</label>
-                                    <input id="new-student-name" type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Nama lengkap" />
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Nama</label>
+                                    <input id="new-student-name" type="text" class="w-full rounded border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nama lengkap" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">NIM Mahasiswa</label>
-                                    <input id="new-student-nim" type="text" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="09xxxxxxxxx" />
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">NIM</label>
+                                    <input id="new-student-nim" type="text" class="w-full rounded border border-gray-300 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="09xxxxxxxxx" />
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button type="submit" class="flex-1 px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined">person_add</span>
-                                    Buat Pengguna
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">person_add</span>
+                                    Buat
                                 </button>
-                                <button type="reset" class="px-5 py-3 bg-gray-100 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold">
-                                    Reset
-                                </button>
+                                <button type="reset" class="px-4 py-2 bg-gray-100 border border-gray-300 text-gray-700 text-xs rounded-lg hover:bg-gray-200 transition-colors font-medium">Reset</button>
                             </div>
-                            <p id="create-user-message" class="text-sm text-gray-500"></p>
+                            <p id="create-user-message" class="text-[10px] text-gray-500"></p>
                         </form>
                     </div>
                 </div>
             </div>
 
+            <!-- ============ Settings Section ============ -->
+            <div id="section-settings" class="hidden">
+                <div class="max-w-3xl space-y-3">
+
+                    <!-- Server Settings Card -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">dns</span>
+                            Server Configuration
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Nama Lab</label>
+                                <input type="text" id="setting-lab-name" value="{{ config.lab_name }}" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Server Host</label>
+                                <input type="text" id="setting-host" value="{{ config.server_host }}" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Server Port</label>
+                                <input type="number" id="setting-port" value="{{ config.server_port }}" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Public Base URL</label>
+                                <input type="text" id="setting-public-url" value="{{ config.public_base_url or '' }}" placeholder="https://domain.com" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="block text-[10px] font-semibold text-gray-500 mb-1">URL Icon / Favicon</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="setting-app-icon" value="{{ config.app_icon_url or '' }}" placeholder="https://example.com/icon.png" class="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500">
+                                <button onclick="previewIcon()" class="px-2 py-2 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 text-xs" title="Preview">
+                                    <span class="material-symbols-outlined text-sm">visibility</span>
+                                </button>
+                                <button onclick="clearIcon()" class="px-2 py-2 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 text-xs" title="Clear">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            </div>
+                            <div id="icon-preview" class="mt-2 flex items-center gap-2 {% if not config.app_icon_url %}hidden{% endif %}">
+                                <img id="icon-preview-img" src="{{ config.app_icon_url or '' }}" alt="Preview" class="w-8 h-8 rounded object-cover border border-gray-300" onerror="this.style.display='none'">
+                                <span class="text-[10px] text-green-600 font-medium">Icon aktif</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Settings Card -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">folder</span>
+                            Upload Settings
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Lokasi Folder</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="setting-folder" value="{{ config.upload_folder }}" class="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500">
+                                    <button onclick="openUploadFolder()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 text-xs" title="Open">Open</button>
+                                    <button onclick="testFolder()" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 text-xs" title="Test">Test</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Max Size/File (MB)</label>
+                                    <input type="number" id="setting-max-size" value="{{ config.max_file_size_mb }}" min="1" max="500" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Max Total (MB)</label>
+                                    <input type="number" id="setting-max-total" value="{{ config.max_total_upload_mb }}" min="1" max="1000" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Max Files/Session</label>
+                                    <input type="number" id="setting-max-files" value="{{ config.max_files_per_session }}" min="1" max="50" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Extensions Card -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">rule</span>
+                            File Extensions
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Ekstensi Diperbolehkan</label>
+                                <input type="text" id="setting-allowed-ext" value="{{ config.allowed_extensions | join(', ') }}" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Ekstensi Diblokir</label>
+                                <input type="text" id="setting-blocked-ext" value="{{ config.blocked_extensions | join(', ') }}" class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-xs font-mono focus:ring-1 focus:ring-indigo-500" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Card -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">security</span>
+                            Keamanan
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-gray-50 rounded p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-medium">Firewall Status</span>
+                                    {% if firewall_exists %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1"></span>Active
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1"></span>Not Configured
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="setupFirewall()" class="flex-1 bg-indigo-600 text-white px-3 py-2 rounded text-xs font-medium flex items-center justify-center gap-1 hover:bg-indigo-700 transition-colors">
+                                    <span class="material-symbols-outlined text-xs">add_circle</span>
+                                    Setup Firewall
+                                </button>
+                                <button onclick="runCleanup()" class="flex-1 bg-gray-100 border border-gray-300 text-gray-700 px-3 py-2 rounded text-xs font-medium flex items-center justify-center gap-1 hover:bg-gray-200 transition-colors">
+                                    <span class="material-symbols-outlined text-xs">delete_sweep</span>
+                                    Cleanup
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="setting-auto-delete" {% if config.auto_delete_enabled %}checked{% endif %} class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-xs font-medium">Auto Delete</span>
+                                </label>
+                                <div class="flex-1">
+                                    <label class="block text-[10px] font-semibold text-gray-500 mb-0.5">Hapus Setelah (Jam)</label>
+                                    <input type="number" id="setting-auto-delete-hours" value="{{ config.auto_delete_after_hours }}" min="1" max="168" class="w-full bg-gray-50 border border-gray-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Card -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                        <h3 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-indigo-600">palette</span>
+                            Sistem
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Theme</label>
+                                <select id="setting-theme" class="w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500">
+                                    <option value="light" {% if config.theme == 'light' %}selected{% endif %}>Light Mode</option>
+                                    <option value="dark" {% if config.theme == 'dark' %}selected{% endif %}>Dark Mode</option>
+                                    <option value="system" {% if config.theme == 'system' %}selected{% endif %}>System Default</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-gray-500 mb-1">Storage Stats</label>
+                                <div class="bg-gray-50 rounded px-3 py-2 text-xs">
+                                    <span class="font-medium text-gray-700">{{ config.lab_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <button onclick="saveSettings()" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold text-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">save</span>
+                        Save All Settings
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-lg hidden z-50"></div>
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold text-xs shadow-lg hidden z-50"></div>
 
     <!-- Powered By Footer -->
-    <footer class="bg-white border-t border-gray-200 py-3 px-6 text-center">
-        <p class="text-[11px] text-gray-500">
+    <footer class="bg-white border-t border-gray-200 py-2 px-4 text-center">
+        <p class="text-[10px] text-gray-500">
             Powered by <span class="font-semibold text-gray-700">Laboratorium FST UINSA</span> & <span class="font-semibold text-gray-700">SINF UINSA</span>
             <span class="mx-1">•</span>
-            © 2026 <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a>. All rights reserved.
+            © 2026 <a href="https://azizlab.my.id" target="_blank" class="font-semibold text-gray-700 hover:text-indigo-600 transition-colors">azizlab.my.id</a>
         </p>
     </footer>
 
     <script>
-        // Update datetime
+        // ============ Sidebar Toggle ============
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggleBtn = document.getElementById('sidebar-toggle');
+            var toggleIcon = document.getElementById('toggle-icon');
+            var mainContent = document.getElementById('main-content');
+            var mainHeader = document.getElementById('main-header');
+            var footer = document.querySelector('footer');
+
+            // Toggle collapsed class on sidebar
+            sidebar.classList.toggle('collapsed');
+            // Toggle sidebar-collapsed class on toggle button
+            toggleBtn.classList.toggle('sidebar-collapsed');
+            // Toggle sidebar-collapsed class on main content
+            mainContent.classList.toggle('sidebar-collapsed');
+            // Toggle sidebar-collapsed class on main header
+            mainHeader.classList.toggle('sidebar-collapsed');
+            // Toggle sidebar-collapsed class on footer
+            if (footer) footer.classList.toggle('sidebar-collapsed');
+
+            // Save state to localStorage
+            var isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebar_collapsed', isCollapsed);
+
+            // Update icon
+            if (isCollapsed) {
+                toggleIcon.textContent = 'menu';
+            } else {
+                toggleIcon.textContent = 'menu_open';
+            }
+        }
+
+        // Restore sidebar state on page load
+        function restoreSidebarState() {
+            var sidebar = document.getElementById('sidebar');
+            var toggleBtn = document.getElementById('sidebar-toggle');
+            var toggleIcon = document.getElementById('toggle-icon');
+            var mainContent = document.getElementById('main-content');
+            var mainHeader = document.getElementById('main-header');
+            var footer = document.querySelector('footer');
+
+            var savedState = localStorage.getItem('sidebar_collapsed');
+            var isCollapsed = savedState === 'true';
+
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                toggleBtn.classList.add('sidebar-collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                mainHeader.classList.add('sidebar-collapsed');
+                if (footer) footer.classList.add('sidebar-collapsed');
+                toggleIcon.textContent = 'menu';
+            } else {
+                sidebar.classList.remove('collapsed');
+                toggleBtn.classList.remove('sidebar-collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+                mainHeader.classList.remove('sidebar-collapsed');
+                if (footer) footer.classList.remove('sidebar-collapsed');
+                toggleIcon.textContent = 'menu_open';
+            }
+        }
+
+        // ============ DateTime ============
         function updateDateTime() {
             var now = new Date();
             document.getElementById('datetime').textContent = now.toLocaleString('id-ID');
@@ -897,42 +964,32 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
 
-        // Check authentication on page load
+        // ============ Auth Check ============
         var authToken = localStorage.getItem('auth_token');
         if (!authToken) {
-            // Redirect to login if not authenticated
             window.location.href = '/login?redirect=/admin';
         }
 
-        // Restore section and expanded jobs from sessionStorage on page load
-        var savedSection = sessionStorage.getItem('labsend_active_section') || 'dashboard';
-        var savedExpandedJob = sessionStorage.getItem('labsend_expanded_job');
-
-        // Restore expanded job
-        if (savedExpandedJob) {
-            setTimeout(function() {
-                toggleJobDetails(savedExpandedJob);
-            }, 100);
+        // ============ URL Parameter Handling ============
+        function getUrlParameter(name) {
+            var params = new URLSearchParams(window.location.search);
+            return params.get(name);
         }
-
-        showSection(savedSection);
 
         // ============ Smart Auto-Refresh System ============
         var isUserInteracting = false;
-        var refreshCheckInterval = null;
         var autoRefreshTimer = null;
         const IDLE_TIMEOUT = 3000;
         const REFRESH_INTERVAL = 15000;
         var currentSection = 'dashboard';
 
         // ============ Section Navigation ============
-        // Track current section
         function showSection(section) {
             sessionStorage.setItem('labsend_active_section', section);
             currentSection = section;
 
-            var sections = ['dashboard', 'queue', 'qr-view', 'settings'];
-            var navs = ['dashboard', 'queue', 'qr', 'settings'];
+            var sections = ['dashboard', 'queue', 'access', 'settings'];
+            var navs = ['dashboard', 'queue', 'access', 'settings'];
 
             sections.forEach(function(s) {
                 var el = document.getElementById('section-' + s);
@@ -947,39 +1004,33 @@
             });
 
             document.getElementById('section-' + section).classList.remove('hidden');
-            var navBtn = document.getElementById('nav-' + (section === 'qr-view' ? 'qr' : section));
+            var navBtn = document.getElementById('nav-' + section);
             if (navBtn) {
                 navBtn.className = navBtn.className.replace('bg-gray-100', 'bg-indigo-100').replace('text-gray-500', 'text-indigo-700');
             }
 
             var titles = {
                 'dashboard': 'Dashboard',
-                'queue': 'Queue',
-                'qr-view': 'QR Display',
-                'settings': 'Settings & Access Management'
+                'queue': 'Upload',
+                'access': 'Access Management',
+                'settings': 'Settings'
             };
             document.getElementById('page-title').textContent = titles[section] || section;
+
+            // Load users when accessing access section
+            if (section === 'access') {
+                loadUsers();
+            }
         }
 
-        // Check if user is in settings section and has interacted with settings form
-        function isUserEditingSettings() {
-            if (currentSection !== 'settings') return false;
-            return isUserInteracting;
-        }
-
-        // Monitor user interactions on form inputs and selects - ONLY for settings section
+        // ============ User Interaction Detection ============
         document.addEventListener('focusin', function(e) {
-            if (currentSection === 'settings' && e.target.matches('input, select, textarea, [contenteditable]')) {
+            if (currentSection === 'settings' && e.target.matches('input, select, textarea')) {
                 isUserInteracting = true;
-                if (refreshCheckInterval) {
-                    clearInterval(refreshCheckInterval);
-                    refreshCheckInterval = null;
-                }
             }
         });
 
-        document.addEventListener('focusout', function(e) {
-            // Only reset if leaving the settings section's form area
+        document.addEventListener('focusout', function() {
             if (currentSection === 'settings') {
                 if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
                 autoRefreshTimer = setTimeout(function() {
@@ -988,34 +1039,47 @@
             }
         });
 
-        // Also detect change events for auto-save scenarios
         document.addEventListener('change', function(e) {
             if (currentSection === 'settings' && e.target.matches('input, select')) {
                 isUserInteracting = true;
             }
         });
 
-        // Detect typing in inputs - only in settings section
         document.addEventListener('input', function(e) {
             if (currentSection === 'settings' && e.target.matches('input, textarea')) {
                 isUserInteracting = true;
             }
         });
 
-        // Toast notification
+        // ============ Toast ============
         function showToast(message, duration) {
             duration = duration || 2500;
             var toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.remove('hidden');
-            toast.style.opacity = '1';
             setTimeout(function() {
-                toast.style.opacity = '0';
-                setTimeout(function() { toast.classList.add('hidden'); }, 300);
+                toast.classList.add('hidden');
             }, duration);
         }
 
-        // Regenerate QR
+        // ============ Restore Section ============
+        // Check URL parameter first, then sessionStorage, default to dashboard
+        var sectionFromUrl = getUrlParameter('section');
+        var savedSection = sectionFromUrl || sessionStorage.getItem('labsend_active_section') || 'dashboard';
+        var savedExpandedJob = sessionStorage.getItem('labsend_expanded_job');
+
+        if (savedExpandedJob) {
+            setTimeout(function() {
+                toggleJobDetails(savedExpandedJob);
+            }, 100);
+        }
+
+        // Restore sidebar state from localStorage
+        restoreSidebarState();
+
+        showSection(savedSection);
+
+        // ============ QR Functions ============
         async function regenerateQR() {
             try {
                 var res = await fetch('/api/qr/regenerate', { method: 'POST' });
@@ -1027,7 +1091,7 @@
             }
         }
 
-        // Logout function
+        // ============ Logout ============
         async function logout() {
             if (!confirm('Yakin ingin logout?')) return;
 
@@ -1050,30 +1114,26 @@
             }, 500);
         }
 
-        // Filter jobs
+        // ============ Job Functions ============
         function filterJobs(status) {
             var rows = document.querySelectorAll('#jobs-table-body tr');
 
-            // First, hide ALL detail rows when filtering
             document.querySelectorAll('#jobs-table-body tr[id^="details-row-"]').forEach(function(row) {
                 row.classList.add('hidden');
                 row.style.display = 'none';
             });
 
             rows.forEach(function(row) {
-                // Skip detail rows (they have id starting with details-row-)
                 if (row.id && row.id.startsWith('details-row-')) {
                     return;
                 }
 
-                // Main job rows (with data-status attribute)
                 if (status === 'all' || row.dataset.status === status) {
                     row.classList.remove('hidden');
                     row.style.display = '';
                 } else {
                     row.classList.add('hidden');
                     row.style.display = 'none';
-                    // Also hide the corresponding details row
                     var detailsRow = document.getElementById('details-row-' + row.dataset.jobId);
                     if (detailsRow) {
                         detailsRow.classList.add('hidden');
@@ -1094,64 +1154,51 @@
             }
         }
 
-        // Toggle job details dropdown
         function toggleJobDetails(jobId) {
             var jobRow = document.getElementById('job-row-' + jobId);
             var detailsRow = document.getElementById('details-row-' + jobId);
 
-            // Don't toggle if job row is hidden (filtered out)
             if (jobRow && (jobRow.classList.contains('hidden') || jobRow.style.display === 'none')) {
                 return;
             }
 
             if (detailsRow) {
                 if (detailsRow.classList.contains('hidden')) {
-                    // Hide all other details rows in jobs-table-body
                     document.querySelectorAll('#jobs-table-body tr[id^="details-row-"]').forEach(function(row) {
                         row.classList.add('hidden');
                         row.style.display = 'none';
                     });
-                    // Show this one
                     detailsRow.classList.remove('hidden');
                     detailsRow.style.display = '';
-                    // Save to sessionStorage
                     sessionStorage.setItem('labsend_expanded_job', jobId);
                 } else {
                     detailsRow.classList.add('hidden');
                     detailsRow.style.display = 'none';
-                    // Clear from sessionStorage
                     sessionStorage.removeItem('labsend_expanded_job');
                 }
             }
         }
 
-        // Toggle job details dropdown for Quick Queue table
         function toggleQuickJobDetails(jobId) {
-            var jobRow = document.getElementById('quick-job-row-' + jobId);
             var detailsRow = document.getElementById('quick-details-row-' + jobId);
 
             if (detailsRow) {
                 if (detailsRow.classList.contains('hidden')) {
-                    // Hide all other details rows in quick-table-body
                     document.querySelectorAll('#quick-table-body tr[id^="quick-details-row-"]').forEach(function(row) {
                         row.classList.add('hidden');
                         row.style.display = 'none';
                     });
-                    // Show this one
                     detailsRow.classList.remove('hidden');
                     detailsRow.style.display = '';
-                    // Save to sessionStorage
                     sessionStorage.setItem('labsend_expanded_job', jobId);
                 } else {
                     detailsRow.classList.add('hidden');
                     detailsRow.style.display = 'none';
-                    // Clear from sessionStorage
                     sessionStorage.removeItem('labsend_expanded_job');
                 }
             }
         }
 
-        // View file
         function viewFile(fileId) {
             if (fileId) {
                 window.open('/files/' + fileId + '/view', '_blank');
@@ -1160,7 +1207,6 @@
             }
         }
 
-        // Open job folder
         async function openJobFolder(jobId) {
             try {
                 var res = await fetch('/api/jobs/' + jobId + '/open-folder', { method: 'POST' });
@@ -1171,18 +1217,10 @@
             }
         }
 
-        // Auto-refresh jobs every 15 seconds - smart refresh that avoids user interaction
-        // ONLY runs when on dashboard or queue sections, pauses when in settings
+        // ============ Auto-Refresh ============
         function refreshJobs() {
-            // Skip refresh if user is in settings section and interacting
-            if (currentSection === 'settings' && isUserInteracting) {
-                return;
-            }
-
-            // Only refresh dashboard/queue sections
-            if (currentSection !== 'dashboard' && currentSection !== 'queue') {
-                return;
-            }
+            if (currentSection === 'settings' && isUserInteracting) return;
+            if (currentSection !== 'dashboard' && currentSection !== 'queue') return;
 
             var currentExpanded = sessionStorage.getItem('labsend_expanded_job');
 
@@ -1190,7 +1228,6 @@
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
                     if (data.jobs && data.jobs.length > 0) {
-                        // Only reload if no row is expanded and user is not interacting
                         if (!currentExpanded && !isUserInteracting) {
                             location.reload();
                         }
@@ -1201,17 +1238,15 @@
                 });
         }
 
-        // Check for new jobs every 15 seconds - respects user interaction state
         setInterval(refreshJobs, REFRESH_INTERVAL);
 
-        // Mark job printed
+        // ============ Job Actions ============
         async function markJobPrinted(jobId, btnElement) {
             try {
                 var res = await fetch('/api/jobs/' + jobId + '/print', { method: 'POST' });
                 var data = await res.json();
                 showToast(data.message);
 
-                // Change button to green (done)
                 if (btnElement) {
                     btnElement.classList.remove('text-gray-500', 'hover:text-green-600', 'hover:bg-green-100');
                     btnElement.classList.add('text-green-600', 'bg-green-100');
@@ -1222,31 +1257,8 @@
             }
         }
 
-        // Reject job (mark as rejected, keep record)
-        async function rejectJob(jobId, btnElement) {
-            if (!confirm('Tolak job ini? Record akan ditandai ditolak.')) return;
-            try {
-                var res = await fetch('/api/jobs/' + jobId + '/reject', { method: 'POST' });
-                var data = await res.json();
-                showToast(data.message);
-
-                // Update row to show rejected status
-                var row = btnElement ? btnElement.closest('tr') : null;
-                if (row) {
-                    var statusBadge = row.querySelector('td:nth-child(7) span');
-                    if (statusBadge) {
-                        statusBadge.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700';
-                        statusBadge.textContent = 'rejected';
-                    }
-                }
-            } catch (e) {
-                showToast('Error rejecting job');
-            }
-        }
-
-        // Hard delete job (remove from database and filesystem)
         async function hardDeleteJob(jobId, btnElement) {
-            if (!confirm('Hapus PERMANEN job ini beserta file-nya? Tindakan ini tidak bisa dibatalkan!')) return;
+            if (!confirm('Hapus PERMANEN job ini beserta file-nya?')) return;
             if (!confirm('SEMUA DATA AKAN DIHAPUS. Lanjutkan?')) return;
 
             try {
@@ -1254,7 +1266,6 @@
                 var data = await res.json();
                 showToast(data.message);
 
-                // Fade out and remove the row
                 var row = btnElement ? btnElement.closest('tr') : null;
                 if (row) {
                     row.style.transition = 'opacity 0.5s';
@@ -1268,8 +1279,7 @@
             }
         }
 
-        // ============ Bulk Selection Functions ============
-
+        // ============ Bulk Selection ============
         function toggleSelectAll(checkbox) {
             var checkboxes = document.querySelectorAll('.file-checkbox');
             checkboxes.forEach(function(cb) {
@@ -1287,7 +1297,6 @@
         }
 
         function updateBulkActionsBar() {
-            // Count selected from both table sections
             var allCheckboxes = document.querySelectorAll('.file-checkbox, .file-checkbox-quick');
             var selectedCount = 0;
             allCheckboxes.forEach(function(cb) {
@@ -1337,28 +1346,17 @@
             if (!confirm('Tandai ' + jobIds.length + ' file sebagai sudah dicetak?')) return;
 
             var successCount = 0;
-            var errorCount = 0;
-
             for (var i = 0; i < jobIds.length; i++) {
                 try {
                     var res = await fetch('/api/jobs/' + jobIds[i] + '/print', { method: 'POST' });
-                    var data = await res.json();
-                    if (res.ok) {
-                        successCount++;
-                    } else {
-                        errorCount++;
-                    }
-                } catch (e) {
-                    errorCount++;
-                }
+                    if (res.ok) successCount++;
+                } catch (e) {}
             }
 
             if (successCount > 0) {
-                showToast(successCount + ' file ditandai sudah dicetak');
+                showToast(successCount + ' file ditandai');
                 clearSelection();
                 setTimeout(function() { location.reload(); }, 500);
-            } else {
-                showToast('Gagal menandai file');
             }
         }
 
@@ -1369,35 +1367,24 @@
                 return;
             }
 
-            if (!confirm('Hapus PERMANEN ' + jobIds.length + ' job beserta file-nya? Tindakan ini tidak bisa dibatalkan!')) return;
+            if (!confirm('Hapus PERMANEN ' + jobIds.length + ' job?')) return;
 
             var successCount = 0;
-            var errorCount = 0;
-
             for (var i = 0; i < jobIds.length; i++) {
                 try {
                     var res = await fetch('/api/jobs/' + jobIds[i] + '/delete', { method: 'POST' });
                     var data = await res.json();
-                    if (res.ok && data.success) {
-                        successCount++;
-                    } else {
-                        errorCount++;
-                    }
-                } catch (e) {
-                    errorCount++;
-                }
+                    if (res.ok && data.success) successCount++;
+                } catch (e) {}
             }
 
             if (successCount > 0) {
-                showToast(successCount + ' job dihapus permanen');
+                showToast(successCount + ' job dihapus');
                 clearSelection();
                 setTimeout(function() { location.reload(); }, 500);
-            } else {
-                showToast('Gagal menghapus job');
             }
         }
 
-        // Add event listeners to all checkboxes
         document.addEventListener('DOMContentLoaded', function() {
             var allCheckboxes = document.querySelectorAll('.file-checkbox, .file-checkbox-quick');
             allCheckboxes.forEach(function(cb) {
@@ -1408,7 +1395,7 @@
             });
         });
 
-        // Open upload folder
+        // ============ Settings Functions ============
         async function openUploadFolder() {
             try {
                 var res = await fetch('/api/settings/open-folder', { method: 'POST' });
@@ -1419,7 +1406,6 @@
             }
         }
 
-        // Test folder
         async function testFolder() {
             var folder = document.getElementById('setting-folder').value;
             try {
@@ -1433,18 +1419,6 @@
             }
         }
 
-        // Browse folder - open folder picker page
-        function browseFolder() {
-            window.open('/api/settings/folder-picker', 'folderPicker', 'width=600,height=500,resizable=yes,scrollbars=yes');
-        }
-
-        // Update upload folder from folder picker
-        function updateUploadFolder(folder) {
-            document.getElementById('setting-folder').value = folder;
-            showToast('Folder diubah ke: ' + folder);
-        }
-
-        // Setup firewall
         async function setupFirewall() {
             try {
                 var res = await fetch('/api/settings/setup-firewall', { method: 'POST' });
@@ -1455,31 +1429,17 @@
             }
         }
 
-        // Check firewall
-        async function checkFirewall() {
-            try {
-                var res = await fetch('/api/settings/setup-firewall', { method: 'POST' });
-                var data = await res.json();
-                showToast(data.message, 5000);
-            } catch (e) {
-                showToast('Error: ' + e.message);
-            }
-        }
-
-        // Run cleanup
         async function runCleanup() {
             try {
                 var res = await fetch('/api/settings/cleanup', { method: 'POST' });
                 var data = await res.json();
                 showToast(data.message, 5000);
-                // Reload page after cleanup to show updated jobs list
                 setTimeout(function() { location.reload(); }, 2000);
             } catch (e) {
                 showToast('Error: ' + e.message);
             }
         }
 
-        // Preview icon
         function previewIcon() {
             var iconUrl = document.getElementById('setting-app-icon').value;
             var previewDiv = document.getElementById('icon-preview');
@@ -1491,24 +1451,12 @@
                 previewImg.src = iconUrl;
                 previewImg.style.display = 'block';
                 faviconLink.href = iconUrl;
-                // Set appropriate type based on extension
-                if (iconUrl.endsWith('.ico')) {
-                    faviconLink.type = 'image/x-icon';
-                } else if (iconUrl.endsWith('.jpg') || iconUrl.endsWith('.jpeg')) {
-                    faviconLink.type = 'image/jpeg';
-                } else if (iconUrl.endsWith('.webp')) {
-                    faviconLink.type = 'image/webp';
-                } else {
-                    faviconLink.type = 'image/png';
-                }
-                // Update logo on page
                 updatePageLogos(iconUrl);
             } else {
                 showToast('Masukkan URL icon terlebih dahulu');
             }
         }
 
-        // Update all logo images on the page
         function updatePageLogos(iconUrl) {
             var logos = document.querySelectorAll('.app-logo');
             logos.forEach(function(logo) {
@@ -1517,12 +1465,10 @@
             });
         }
 
-        // Clear icon
         function clearIcon() {
             document.getElementById('setting-app-icon').value = '';
             document.getElementById('icon-preview').classList.add('hidden');
             document.getElementById('favicon-link').href = '';
-            // Reset logos to default "L"
             var logoContainers = document.querySelectorAll('.app-logo-container');
             logoContainers.forEach(function(container) {
                 container.innerHTML = 'L';
@@ -1530,7 +1476,6 @@
             });
         }
 
-        // Save settings
         async function saveSettings() {
             var settings = {
                 lab_name: document.getElementById('setting-lab-name').value,
@@ -1549,8 +1494,6 @@
                 theme: document.getElementById('setting-theme').value
             };
 
-            console.log('Saving settings:', settings);
-
             try {
                 var res = await fetch('/api/settings', {
                     method: 'POST',
@@ -1558,10 +1501,8 @@
                     body: JSON.stringify(settings)
                 });
                 var data = await res.json();
-                console.log('Save response:', data);
                 if (res.ok) {
                     showToast('Settings saved successfully!');
-                    // Update favicon and page logos after save
                     var iconUrl = document.getElementById('setting-app-icon').value;
                     var faviconLink = document.getElementById('favicon-link');
                     if (iconUrl) {
@@ -1572,31 +1513,17 @@
                     showToast('Error: ' + (data.message || 'Unknown error'));
                 }
             } catch (e) {
-                console.error('Save error:', e);
                 showToast('Error: ' + e.message);
             }
         }
 
-        // Update favicon on page load if icon is set
-        document.addEventListener('DOMContentLoaded', function() {
-            var iconUrl = document.getElementById('setting-app-icon').value;
-            var faviconLink = document.getElementById('favicon-link');
-            if (iconUrl) {
-                faviconLink.href = iconUrl;
-            }
-        });
-
-        // ============ User Management Functions (Access Management) ============
-
+        // ============ User Management ============
         function validateNim(nim) {
             return /^09\d{9}$/.test(nim);
         }
 
         async function loadUsers() {
-            // Skip refresh if user is in settings section and interacting
-            if (currentSection === 'settings' && isUserInteracting) {
-                return;
-            }
+            if (currentSection === 'settings' && isUserInteracting) return;
 
             try {
                 var response = await fetch('/api/auth/users');
@@ -1608,31 +1535,30 @@
 
                 if (response.ok && data.success && Array.isArray(data.users)) {
                     if (data.users.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Belum ada pengguna</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-gray-500 text-xs">Belum ada pengguna</td></tr>';
                         return;
                     }
                     data.users.forEach(function(user) {
                         var tr = document.createElement('tr');
                         tr.className = 'border-t border-gray-200 hover:bg-indigo-50 transition-colors';
                         tr.innerHTML = `
-                            <td class="px-4 py-3 font-medium">${user.username}</td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'}">
+                            <td class="px-3 py-2 font-medium text-xs">${user.username}</td>
+                            <td class="px-3 py-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${user.role === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-700'}">
                                     ${user.role}
                                 </span>
                             </td>
-                            <td class="px-4 py-3">${user.student_name || '-'}</td>
-                            <td class="px-4 py-3 font-mono text-sm">${user.student_nim || '-'}</td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${user.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            <td class="px-3 py-2 text-xs">${user.student_name || '-'}</td>
+                            <td class="px-3 py-2 font-mono text-xs">${user.student_nim || '-'}</td>
+                            <td class="px-3 py-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${user.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
                                     ${user.is_active ? 'Aktif' : 'Nonaktif'}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">${user.last_login || '-'}</td>
-                            <td class="px-4 py-3 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button onclick="toggleUserStatus('${user.id}', ${user.is_active})" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium hover:bg-gray-100 transition-colors">${user.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                                    <button onclick="deleteUser('${user.id}')" class="rounded-lg border border-red-300 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50 transition-colors">Hapus</button>
+                            <td class="px-3 py-2 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <button onclick="toggleUserStatus('${user.id}', ${user.is_active})" class="px-2 py-1 border border-gray-300 rounded text-[10px] font-medium hover:bg-gray-100 transition-colors">${user.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                                    <button onclick="deleteUser('${user.id}')" class="px-2 py-1 border border-red-300 rounded text-[10px] font-medium text-red-700 hover:bg-red-50 transition-colors">Hapus</button>
                                 </div>
                             </td>
                         `;
@@ -1720,9 +1646,8 @@
             }
         }
 
-        // Initialize user management
+        // Initialize
         document.getElementById('create-user-form').addEventListener('submit', createUser);
-        loadUsers();
     </script>
 </body>
 </html>
